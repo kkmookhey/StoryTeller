@@ -30,6 +30,23 @@ ALL drafter prompts return a JSON object with `status` as the first-line discrim
 
 Consumers (orchestrator, publisher) MUST check `status` first. `status: "ok"` → push to Postiz or hold per format rules. `status: "error"` → log + move draft input to `~/.storyteller/failed-pushes/` for follow-up.
 
+## Routing hints in error messages (orchestrator convention)
+
+When a drafter cannot produce a valid draft because the signal is wrong for THIS format but might work for ANOTHER format, the error message MAY include a routing hint using the suffix `" — recommend <other-format>"`.
+
+Examples:
+- `"error": "incompressible for x — recommend linkedin long-post"` (signal too dense for a 3-5 post thread; try long-form)
+- `"error": "no visual hook for reels — recommend x thread"` (signal is text-only insight; better as text-first)
+- `"error": "no consumer-safety angle for instagram — recommend linkedin long-post"` (signal is too technical for Meera; better for Jennifer)
+
+The orchestrator (Task 12 SKILL.md workflow, future enhancement) reads the suffix and re-routes the signal to the recommended drafter. If the orchestrator doesn't yet implement re-routing, the hint is recorded in the failed-pushes/ log for KK's manual review.
+
+**Convention rules:**
+- Suffix is ` — recommend <format>` (em-dash, lowercase, hyphenated format name)
+- Recommended format must be one of: `linkedin long-post`, `x thread`, `instagram caption`, `reels script`
+- This is OPTIONAL — drafters may emit plain `"error": "<message>"` without a hint when no other format fits.
+- Hints are non-binding — the orchestrator may ignore them.
+
 ## Output strictness (all formats)
 
 - Strict JSON only. No prose around it. No markdown fence (no ```json ... ```).

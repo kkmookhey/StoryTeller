@@ -31,7 +31,7 @@ Apply the kk-voice Jennifer pre-publish checklist (7 items) to the JOINED thread
 ## Structural validator (bash)
 ```bash
 python3 -c '
-import json, pathlib
+import json, pathlib, re
 d = json.load(open("/tmp/x-thread.json"))
 assert d.get("status") == "ok", f"status not ok: {d.get(\"status\")}"
 assert d["platform"] == "x" and d["format"] == "thread"
@@ -40,6 +40,11 @@ assert 3 <= len(d["content"]) <= 5, f"thread length {len(d[\"content\"])} outsid
 for i, p in enumerate(d["content"]):
     assert isinstance(p, str), f"post {i} not a string"
     assert len(p) <= 280, f"post {i} is {len(p)} chars, exceeds 280"
+    # Inline-hashtag check: # tokens (e.g. "#ai") should only appear in the final post,
+    # and even there only if they are part of the official hashtags[] array (not inline mid-sentence).
+    hashtag_tokens = re.findall(r"#\w+", p)
+    if i < len(d["content"]) - 1:
+        assert not hashtag_tokens, f"post {i} contains inline hashtag(s) {hashtag_tokens} — hashtags belong in the final post and in the hashtags[] array"
 tags = d["hashtags"]
 assert isinstance(tags, list) and 0 <= len(tags) <= 3, f"hashtag count {len(tags)} outside 0-3"
 for t in tags: assert t.startswith("#"), f"hashtag missing #: {t}"

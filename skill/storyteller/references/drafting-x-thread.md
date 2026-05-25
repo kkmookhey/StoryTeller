@@ -30,7 +30,7 @@ The orchestrator only calls this drafter for signals with `score >= 7`. Use `sig
 
 **Per-post character target:** `<= 280` chars HARD limit per post. Aim for `<= 270` to allow natural pauses and copy that doesn't feel Tetris-packed.
 
-**Post 1 — the hook.** The post that earns the rest. Must name a Jennifer-relevant stake (see kk-voice "What's On Her Mind at 8:15 AM Tuesday" for the menu). `<= 210` chars is ideal — X previews the first ~210 chars on mobile timelines and in retweet/quote contexts, and a hook that survives a quote-tweet earns more reach. Forbidden hook framings are listed below.
+**Post 1 — the hook.** The post that earns the rest. Must name a Jennifer-relevant stake (see kk-voice "What's On Her Mind at 8:15 AM Tuesday" for the menu). `<= 210` chars TARGET (not 'ideal' — drifting to 270 fits the hard cap but cuts the mobile preview, which is exactly the failure mode this rule exists to prevent). Forbidden hook framings are listed below.
 
 **Posts 2 to N-1 — the receipts.** One concrete receipt per post. Named tools, real numbers, specific scenarios pulled from the signal. NO bullets within a post — use em-dashes or semicolons for compound thoughts. One receipt per post is the rule; cramming two receipts into 280 chars dilutes both.
 
@@ -56,7 +56,7 @@ In addition to the cross-format banned phrases (see `_drafting-shared.md` / `tes
 Examples of hook shapes that work (illustrative, do not copy verbatim):
 
 - "Your AI compliance scanner is lying to you about which framework you're failing. We pulled 65 source-verified rules across 5 frameworks. Three were already wrong upstream."
-- "If you trust your AI compliance scanner to tell you which framework you're failing — it's wrong. Three of the 65 rules we rebuilt were already broken in the upstream taxonomy."
+- "OpenAI changed the o4 system prompt last month. If you're red-teaming agents in production, three of your eval suites just went stale — and the failure mode is silent."
 
 ## Hashtag rules (X-specific)
 
@@ -101,7 +101,7 @@ Per `_drafting-shared.md`, return the error envelope with `status: "error"` when
 - If the input is malformed JSON or not a ScoredSignal shape:
   `{"status": "error", "error": "malformed input", "platform": "x", "format": "thread"}`
 - If the signal cannot be compressed into 3-5 posts without losing the specifics (after honest attempt):
-  `{"status": "error", "error": "incompressible for x — recommend linkedin long-form", "platform": "x", "format": "thread"}`
+  `{"status": "error", "error": "incompressible for x — recommend linkedin long-post", "platform": "x", "format": "thread"}`
 
 ## Output
 
