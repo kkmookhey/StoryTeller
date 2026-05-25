@@ -16,12 +16,24 @@
 
 ## Phase 1 — Verification & Setup (de-risk first)
 
-### Task 1: Verify Postiz MCP draft semantics
+### Task 1: Verify Postiz MCP draft semantics AND map integrations
 
 **Files:**
 - Create: `docs/superpowers/notes/postiz-mcp-findings.md`
 
-The spec flagged this as the #1 risk. We need to know exactly which Postiz MCP tool to call and whether "draft" is a flag, a status enum, or requires a far-future scheduled date workaround. Do this BEFORE writing the publisher prompt.
+The spec flagged this as the #1 risk. We need three things:
+1. Which MCP tool creates posts and whether "draft" is a flag, a status enum, or requires a far-future scheduled date workaround.
+2. The mapping from social platform (linkedin/x/instagram/youtube) to Postiz integration IDs — KK may have multiple accounts on the same platform (personal LinkedIn vs Network Intelligence page vs Transilience page) and we need to pick which one StoryTeller posts to.
+3. Whether multiple integrations can be targeted in one post call or require separate calls per integration.
+
+**Auth prerequisite:** Before this task, KK must have:
+- A Postiz account (cloud at postiz.com or self-hosted)
+- Connected his social handles via OAuth in the Postiz dashboard
+- Generated an API key in Postiz Settings
+- Configured the Postiz MCP plugin with that API key (env var or plugin config)
+- Run `/reload-plugins` so the Postiz MCP tools are exposed
+
+Verify by running ToolSearch for "postiz" — should find at least `integrationList` and `schedulePostTool`.
 
 - [ ] **Step 1: Confirm Postiz MCP is connected**
 
@@ -48,13 +60,27 @@ Show me the full JSON schema for the Postiz MCP tool that creates posts (likely 
 In Claude Code, use the Postiz MCP to create one test post containing the text `"StoryTeller MCP test — please delete"` such that it does NOT publish. Try the most-natural draft mechanism first (explicit flag/status if available; far-future schedule if not).
 Expected: post appears in Postiz UI under Drafts (or scheduled-far-future queue), is NOT published to any social account.
 
-- [ ] **Step 4: Document findings**
+- [ ] **Step 4: List and map integrations**
+
+In Claude Code:
+```
+Using the Postiz MCP, call integrationList. Return the full JSON of all
+connected integrations including their integration_id, platform, and
+display name / handle.
+```
+
+For each platform we care about in Slice D (`linkedin`, `x`), KK picks which integration to use if multiple exist. Capture the chosen IDs.
+
+Also note any integrations for `instagram` and `youtube` even though they're held in Slice D — we'll persist them in config so later slices use the right ones.
+
+- [ ] **Step 5: Document findings**
 
 Write `docs/superpowers/notes/postiz-mcp-findings.md` containing:
 - Exact MCP tool name to use for creating drafts
 - Exact parameter shape (which fields, which values for "don't publish")
 - Whether the API returns a `draft_id` we can store in state.jsonl
 - Whether multiple integrations (linkedin + x) can be specified in a single call or require separate calls
+- The integration-ID-to-platform mapping for KK's chosen accounts
 - Any quirks (rate limits, character limits enforced server-side, etc.)
 
 Template:
@@ -73,19 +99,25 @@ Template:
 - One call per platform: yes/no
 - If one call: how to specify multiple integrations: <example>
 
+## Integration mapping (KK's chosen accounts)
+- linkedin: <integration_id> (handle: <display>)
+- x: <integration_id> (handle: <display>)
+- instagram: <integration_id> (handle: <display>) — held in Slice D
+- youtube: <integration_id> (handle: <display>) — held in Slice D
+
 ## Quirks observed
 - <any character limits, rate limits, surprises>
 ```
 
-- [ ] **Step 5: Clean up the test post**
+- [ ] **Step 6: Clean up the test post**
 
 In Postiz UI (or via MCP if supported), delete the throwaway test post.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add docs/superpowers/notes/postiz-mcp-findings.md
-git commit -m "docs: capture Postiz MCP draft semantics for storyteller publisher"
+git commit -m "docs: capture Postiz MCP draft semantics and integration mapping for storyteller"
 ```
 
 ---
@@ -213,6 +245,11 @@ publishing:
   postiz:
     push_as_draft: true        # ALWAYS true. Never auto-publishes.
     workspace_id: null
+    integrations:              # Filled in during Task 1 (integration mapping).
+      linkedin: ""             # Postiz integration_id for your LinkedIn account
+      x: ""                    # Postiz integration_id for your X account
+      instagram: ""            # Held in Slice D; record anyway for later slices
+      youtube: ""              # Held in Slice D; record anyway for later slices
 
 notification:
   slack:
