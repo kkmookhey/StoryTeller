@@ -31,7 +31,7 @@ A single ScoredSignal — the Signal envelope plus the scorer's verdict (same sh
 }
 ```
 
-The orchestrator only calls this drafter for signals with `score >= 7`. Note: the scorer is Jennifer-tuned, so `why_postworthy` and `suggested_angle` may carry LinkedIn framing. **Re-target the substrate for Meera/Rohan — do not copy the Jennifer angle verbatim.** Use `signal.title`, `signal.summary`, and `signal.raw.body_excerpt` as the receipts. Do NOT invent numbers, named tools, or scenarios the signal doesn't support.
+The orchestrator calls this drafter for signals that survived the workflow's `score >= 4` cutoff (most weeks the top-N picks score 7-10; on a thin week 4-6). Note: the scorer is Jennifer-tuned, so `why_postworthy` and `suggested_angle` may carry LinkedIn framing. **Re-target the substrate for Meera/Rohan — do not copy the Jennifer angle verbatim.** Use `signal.title`, `signal.summary`, and `signal.raw.body_excerpt` as the receipts. Do NOT invent numbers, named tools, or scenarios the signal doesn't support.
 
 **Jennifer markers to scrub** (these read fine on LinkedIn but signal "wrong audience" on @settlingforless1):
 - "Deputy CISO", "CISO", "the board" (as a framing device) — name the person actually affected instead

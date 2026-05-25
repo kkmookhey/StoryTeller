@@ -23,7 +23,7 @@ A single ScoredSignal — the Signal envelope plus the scorer's verdict:
 }
 ```
 
-The orchestrator only calls this drafter for signals with `score >= 7`. You can trust the input has substance worth posting; your job is to render that substance as a Jennifer-grade post.
+The orchestrator calls this drafter for signals that survived the workflow's `score >= 4` cutoff. Most weeks the top-N picks will be in the 7-10 range (the strongly Jennifer-worthy zone). On a thin week they may be 4-6 — still your job to render them as well as the substrate allows, and KK reviews in Postiz before publishing.
 
 Use `signal.title`, `signal.summary`, and `signal.raw.body_excerpt` as the substrate. The `suggested_angle` is a strong hint, not a mandate — if a better angle emerges from the body, take it, but stay anchored in the receipts the signal actually contains. Do NOT invent numbers, named tools, or scenarios the signal doesn't support.
 

@@ -19,7 +19,7 @@ A single ScoredSignal — the Signal envelope plus the scorer's verdict:
 }
 ```
 
-The orchestrator only calls this drafter for signals with `score >= 7`. Use `signal.title`, `signal.summary`, and `signal.raw.body_excerpt` as the substrate. The `suggested_angle` is a strong hint, not a mandate. Do NOT invent numbers, named tools, or scenarios the signal doesn't support.
+The orchestrator calls this drafter for signals that survived the workflow's `score >= 4` cutoff. Most weeks the top-N picks will be in the 7-10 range; on a thin week they may be 4-6 — still draft as well as the substrate allows. Use `signal.title`, `signal.summary`, and `signal.raw.body_excerpt` as the substrate. The `suggested_angle` is a strong hint, not a mandate. Do NOT invent numbers, named tools, or scenarios the signal doesn't support.
 
 ## Structure constraints (X-specific)
 
