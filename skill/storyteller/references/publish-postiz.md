@@ -64,7 +64,7 @@ If any precheck fails, return the failure envelope WITHOUT calling the CLI:
 postiz posts:create \
   -c '<draft.content, shell-escaped>' \
   -t draft \
-  -s "2099-01-01T00:00:00Z" \
+  -s "<current-utc-timestamp>" \
   -i "<integration_id>"
 ```
 
@@ -77,16 +77,19 @@ postiz posts:create \
   -c '<draft.content[2]>' \
   -d 0 \
   -t draft \
-  -s "2099-01-01T00:00:00Z" \
+  -s "<current-utc-timestamp>" \
+  --settings '{"who_can_reply_post":"everyone"}' \
   -i "<integration_id>"
 ```
 
 Repeat `-c` for every post in the thread (3 to 5 posts per the X drafter contract).
 
+**X requires `--settings '{"who_can_reply_post":"everyone"}'`.** Without it, the CLI fails with HTTP 400: `posts.0.settings.who_can_reply_post must be one of the following values: everyone, following, mentionedUsers, subscribers, verified`. Verified empirically 2026-05-25. Other valid values (`following`, `mentionedUsers`, `subscribers`, `verified`) restrict who can reply on the published tweet — `everyone` is the default-permissive choice and matches KK's existing X reply settings. LinkedIn does NOT need `--settings`.
+
 ### Key invocation rules (from findings doc)
 
 - `-t draft` — explicit draft-type flag. Without this, Postiz defaults to `schedule` and the post would be queued for publish at `-s` time. Always pass `-t draft`.
-- `-s "2099-01-01T00:00:00Z"` — REQUIRED even for drafts (the CLI rejects calls without `-s`). Use this far-future placeholder so it is obviously a placeholder in the Postiz UI; the date is ignored for `-t draft`.
+- `-s "<current-utc-timestamp>"` — REQUIRED even for drafts (the CLI rejects calls without `-s`). Use the **current UTC timestamp at the moment of creation**, captured via `date -u +%Y-%m-%dT%H:%M:%SZ`. Postiz stores this as `publishDate` and surfaces it prominently in the UI; using a meaningful timestamp (when the draft was authored) is better provenance than a far-future placeholder. The date is ignored for `-t draft` publishing — when KK clicks Schedule in the UI later, Postiz will prompt him to pick a future date since "now or earlier" can't be a schedule target. **Do NOT use `2099-01-01T00:00:00Z` or any other far-future placeholder** — those make the UI confusing and the drafts disappear from `posts:list` default window.
 - `-i "<integration_id>"` — looked up from `config.publishing.postiz.integrations[draft.platform]`. For Slice D: LinkedIn = `<your-linkedin-integration-id>`, X = `<your-x-integration-id>`.
 - `-d 0` — X thread only. Zero-minute delay between thread posts so they fire as a true thread when published. Omit `-d` for LinkedIn.
 - `POSTIZ_API_KEY` — must be set in the shell environment when invoking. The storyteller skill itself does NOT set it; KK's shell does (via `~/.zshrc`). If missing, precheck #5 catches it.
@@ -138,9 +141,10 @@ escape(content_string):
 
 ## Capturing the return
 
-The CLI returns JSON on stdout:
+The CLI prints a status line BEFORE the JSON payload on stdout. Verified output shape (2026-05-25):
 
-```json
+```
+✅ Post created successfully!
 [
   {
     "postId": "cmpknxfqj043mma0yw45b6m3j",
@@ -149,12 +153,20 @@ The CLI returns JSON on stdout:
 ]
 ```
 
-Parse with `jq`:
+**Naive `json.loads(stdout)` / `jq` on the raw stdout will fail** — the leading `✅ Post created successfully!` line is not JSON. Parse strategy:
+
+1. Find the first `[` or `{` in stdout and slice from there.
+2. Or `grep -v '^✅'` to drop the status prefix, then pipe to `jq`.
+3. Or regex `re.search(r'\[.*\]', stdout, re.DOTALL)` in Python and parse the match.
+
+Once parsed, extract:
 
 - `postId`: `jq -r '.[0].postId'`
 - `integration`: `jq -r '.[0].integration'`
 
 Note: the return is an ARRAY (one entry per integration). In Slice D we always call with ONE `-i` so we always get one entry. For Slice E+ (multi-integration single call), iterate the array.
+
+**Verification via `posts:list`:** the default date window is `[now - 30d, now + 30d]`. Drafts created with the current-timestamp convention will appear here without extra flags. (Historical note: a previous convention used `2099-01-01T00:00:00Z` as a placeholder; those drafts fell outside the default window and needed an explicit `--startDate "2099-01-01T00:00:00Z" --endDate "2099-01-02T00:00:00Z"` to find. That convention was abandoned 2026-05-25 — see the `-s` flag rule above.)
 
 ## Error handling
 
