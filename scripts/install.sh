@@ -4,22 +4,25 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SKILL_SRC="${REPO_ROOT}/skill/storyteller"
-SKILL_DEST="${HOME}/.claude/skills/storyteller"
+SKILLS_TO_INSTALL=(storyteller kk-voice kk-short-form)
 USER_DATA="${HOME}/.storyteller"
 
-if [[ ! -d "${SKILL_SRC}" ]]; then
-  echo "Skill source missing: ${SKILL_SRC}" >&2
-  exit 1
-fi
+mkdir -p "${HOME}/.claude/skills"
 
-mkdir -p "$(dirname "${SKILL_DEST}")"
-if [[ -e "${SKILL_DEST}" || -L "${SKILL_DEST}" ]]; then
-  echo "Removing existing ${SKILL_DEST}"
-  rm -rf "${SKILL_DEST}"
-fi
-ln -s "${SKILL_SRC}" "${SKILL_DEST}"
-echo "Linked ${SKILL_DEST} -> ${SKILL_SRC}"
+for skill in "${SKILLS_TO_INSTALL[@]}"; do
+  src="${REPO_ROOT}/skill/${skill}"
+  dest="${HOME}/.claude/skills/${skill}"
+  if [[ ! -d "${src}" ]]; then
+    echo "Skill source missing: ${src}" >&2
+    exit 1
+  fi
+  if [[ -e "${dest}" || -L "${dest}" ]]; then
+    echo "Removing existing ${dest}"
+    rm -rf "${dest}"
+  fi
+  ln -s "${src}" "${dest}"
+  echo "Linked ${dest} -> ${src}"
+done
 
 mkdir -p "${USER_DATA}/pending-video" "${USER_DATA}/failed-pushes"
 if [[ ! -f "${USER_DATA}/config.yaml" ]]; then
