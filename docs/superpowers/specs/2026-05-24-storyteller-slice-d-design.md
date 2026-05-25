@@ -33,16 +33,18 @@ The skill is invoked two ways:
 
 **Slice D scope clarification:** The skill is *architecturally* runnable in both modes from day one — the same `storyteller` code paths work whether invoked interactively or headlessly. However, Slice D only ships the interactive invocation; operationally enabling the daily Cowork schedule (cron config, headless-agent prompt, Slack notification routing) is Slice H. Slice D acceptance criteria only test interactive invocation.
 
-The skill orchestrates these MCPs (assumed already connected and authenticated in KK's environment):
+The skill orchestrates these MCPs and CLIs (assumed already connected and authenticated in KK's environment):
 
-| MCP | Purpose in Slice D | Slice D status |
-|---|---|---|
-| GitHub MCP | Read merged PRs from configured personal repos | Active |
-| Postiz MCP | Push drafts (never auto-publish) | Active |
-| Slack MCP | Send "drafts ready" notification | Active |
-| Slack MCP (read) | Read messages from configured channels as signals | Held for Slice E |
-| Atlassian MCP | Read Confluence pages + Jira tickets as signals | Held for Slice E |
-| Descript MCP | Text → video → YouTube/Reels publishing | Held for Slice G |
+| Tool | Type | Purpose in Slice D | Slice D status |
+|---|---|---|---|
+| GitHub MCP | MCP | Read merged PRs from configured personal repos | Active |
+| Postiz CLI (`postiz` command) | CLI (via Bash) | Push drafts (never auto-publish) | Active |
+| Slack MCP | MCP | Send "drafts ready" notification | Active |
+| Slack MCP (read) | MCP | Read messages from configured channels as signals | Held for Slice E |
+| Atlassian MCP | MCP | Read Confluence pages + Jira tickets as signals | Held for Slice E |
+| Descript MCP | MCP | Text → video → YouTube/Reels publishing | Held for Slice G |
+
+**Note on Postiz:** The Postiz Claude Code plugin (`postiz` from claude-plugins-official) is a CLI-wrapping skill, not an MCP server. It exposes `Bash(postiz:*)` invocations. The storyteller skill calls `postiz integrations:list`, `postiz posts:create -c ... -i <integration-id>`, etc. via the Bash tool. Authentication uses `POSTIZ_API_KEY` env var (set in the shell environment).
 
 The skill loads two existing skill bundles as voice authorities:
 
@@ -424,7 +426,7 @@ Skills don't have traditional unit tests. Testing is:
 
 ## 12. Risks Flagged Up Front
 
-1. **Postiz MCP draft semantics unverified.** Postiz MCP exposes 8 tools (`integrationList`, `integrationSchema`, `triggerTool`, `schedulePostTool`, `generateImageTool`, `generateVideoOptions`, `videoFunctionTool`, `generateVideoTool`). We assume `schedulePostTool` supports an explicit draft mode. **First task in the implementation plan is verifying this by inspecting the actual MCP tool schema.** If draft mode requires a scheduled-far-future workaround, the design accommodates it but we need to know upfront.
+1. **Postiz draft semantics unverified.** Postiz is invoked via the `postiz` CLI (`Bash(postiz:*)`). Per the CLI's QUICK_START, `postiz posts:create -s "<ISO date>"` schedules a post; "draft" semantics need confirming — likely either a `--draft` flag or a far-future schedule date. **First task in the implementation plan is verifying this by inspecting `postiz posts:create --help` and testing.** If draft mode requires a scheduled-far-future workaround, the design accommodates it but we need to know upfront.
 
 2. **Scoring accuracy is empirical until calibrated.** The Jennifer rubric is principled, but Claude's interpretation of "Jennifer-worthy" varies. The golden-set calibration (acceptance criterion) is the de-risking step. Plan time for one iteration on the rubric prompt after first calibration run.
 
@@ -453,7 +455,9 @@ The writing-plans phase should resolve these before coding:
 **External (must exist in KK's environment before install):**
 - Claude Code or Claude Desktop with skill support
 - GitHub MCP server configured and authenticated
-- Postiz account + MCP server configured and authenticated
+- Postiz account + connected social integrations (LinkedIn, X, Instagram, YouTube via OAuth in Postiz dashboard)
+- `postiz` CLI installed globally (`npm install -g postiz`) — provided by the official Postiz Claude Code plugin
+- `POSTIZ_API_KEY` env var set in the shell environment so Bash-invoked `postiz` commands authenticate
 - Slack MCP server configured (write permission to DM target)
 
 **Internal (KK's existing assets):**

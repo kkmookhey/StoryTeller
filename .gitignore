@@ -39,6 +39,12 @@ build/
 !.env.example
 *.pem
 *.key
+*Key.txt
+*key.txt
+*_key.txt
+*api_key*
+*api-key*
+secrets/
 
 # Logs
 *.log

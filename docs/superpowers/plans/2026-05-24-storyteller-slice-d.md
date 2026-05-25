@@ -16,94 +16,108 @@
 
 ## Phase 1 — Verification & Setup (de-risk first)
 
-### Task 1: Verify Postiz MCP draft semantics AND map integrations
+### Task 1: Verify Postiz CLI draft semantics AND map integrations
 
 **Files:**
-- Create: `docs/superpowers/notes/postiz-mcp-findings.md`
+- Create: `docs/superpowers/notes/postiz-cli-findings.md`
+
+**ARCHITECTURE NOTE:** Postiz is invoked via the `postiz` CLI (a Claude Code plugin that wraps `Bash(postiz:*)`), NOT via MCP tools. There are no `mcp__postiz__*` tools. All operations are shell commands.
 
 The spec flagged this as the #1 risk. We need three things:
-1. Which MCP tool creates posts and whether "draft" is a flag, a status enum, or requires a far-future scheduled date workaround.
+1. Whether `postiz posts:create` supports an explicit `--draft` flag, a `--status draft` enum, or whether "draft" requires scheduling far into the future.
 2. The mapping from social platform (linkedin/x/instagram/youtube) to Postiz integration IDs — KK may have multiple accounts on the same platform (personal LinkedIn vs Network Intelligence page vs Transilience page) and we need to pick which one StoryTeller posts to.
-3. Whether multiple integrations can be targeted in one post call or require separate calls per integration.
+3. Whether multiple integrations can be targeted in one `posts:create` call or require separate calls per integration (the QUICK_START example uses `-i "twitter-123,linkedin-456,facebook-789"` so multi-integration in one call appears supported).
 
 **Auth prerequisite:** Before this task, KK must have:
 - A Postiz account (cloud at postiz.com or self-hosted)
 - Connected his social handles via OAuth in the Postiz dashboard
-- Generated an API key in Postiz Settings
-- Configured the Postiz MCP plugin with that API key (env var or plugin config)
-- Run `/reload-plugins` so the Postiz MCP tools are exposed
+- Generated an API key in Postiz Settings (saved locally at `Postiz Key.txt` — gitignored)
+- The `postiz` CLI installed globally: `npm install -g postiz` (provided by the official Postiz Claude Code plugin)
+- `POSTIZ_API_KEY` exported in the shell environment so Bash-invoked `postiz` commands authenticate
 
-Verify by running ToolSearch for "postiz" — should find at least `integrationList` and `schedulePostTool`.
+Verify by running `postiz auth:status` — should return authenticated.
 
-- [ ] **Step 1: Confirm Postiz MCP is connected**
+- [ ] **Step 1: Confirm Postiz CLI is installed and authenticated**
 
-Run in Claude Code:
+```bash
+which postiz && postiz --version
+postiz auth:status
 ```
-List all MCP tools whose name contains "postiz" or starts with "mcp__postiz".
-```
-Expected: 8 tools listed: `integrationList`, `integrationSchema`, `triggerTool`, `schedulePostTool`, `generateImageTool`, `generateVideoOptions`, `videoFunctionTool`, `generateVideoTool`.
-If 0 tools: Postiz MCP not installed; stop and install before continuing.
+Expected: `postiz` resolves to a path, version prints, auth status reports authenticated. If `postiz: command not found`, run `npm install -g postiz` first. If auth not confirmed, export `POSTIZ_API_KEY=<value from Postiz Key.txt>` in your shell profile.
 
-- [ ] **Step 2: Read the schedulePostTool schema**
+- [ ] **Step 2: Read the posts:create help**
 
-Run in Claude Code:
+```bash
+postiz posts:create --help
 ```
-Show me the full JSON schema for the Postiz MCP tool that creates posts (likely schedulePostTool). I need to know:
-- Required vs optional fields
-- Whether there is a draft/status/state field
-- How to specify a post that should NOT publish immediately
-- Whether scheduling far-future creates a "draft" or a "scheduled" post
-```
+Capture which flags exist for "draft" status. Look for: `--draft`, `--status`, `-s/--schedule`, anything indicating "do not publish immediately."
 
 - [ ] **Step 3: Test create-as-draft with a throwaway post**
 
-In Claude Code, use the Postiz MCP to create one test post containing the text `"StoryTeller MCP test — please delete"` such that it does NOT publish. Try the most-natural draft mechanism first (explicit flag/status if available; far-future schedule if not).
-Expected: post appears in Postiz UI under Drafts (or scheduled-far-future queue), is NOT published to any social account.
+Try the most-natural draft mechanism first. Examples:
+```bash
+# If a --draft flag exists:
+postiz posts:create -c "StoryTeller CLI test — please delete" -i <one-integration-id> --draft
+
+# OR scheduled-far-future workaround:
+postiz posts:create -c "StoryTeller CLI test — please delete" -i <one-integration-id> -s "2099-01-01T00:00:00Z"
+```
+Expected: post appears in Postiz UI under Drafts (or scheduled-far-future queue), is NOT published.
 
 - [ ] **Step 4: List and map integrations**
 
-In Claude Code:
+```bash
+postiz integrations:list
 ```
-Using the Postiz MCP, call integrationList. Return the full JSON of all
-connected integrations including their integration_id, platform, and
-display name / handle.
+Output is JSON like:
+```json
+[
+  { "id": "linkedin-abc123", "provider": "linkedin", "name": "<display>" },
+  { "id": "twitter-xyz789",  "provider": "twitter",  "name": "<display>" },
+  ...
+]
 ```
 
-For each platform we care about in Slice D (`linkedin`, `x`), KK picks which integration to use if multiple exist. Capture the chosen IDs.
+For each platform we care about in Slice D (`linkedin`, `twitter`/x), KK picks which integration to use if multiple exist. Capture the chosen IDs.
 
 Also note any integrations for `instagram` and `youtube` even though they're held in Slice D — we'll persist them in config so later slices use the right ones.
 
 - [ ] **Step 5: Document findings**
 
-Write `docs/superpowers/notes/postiz-mcp-findings.md` containing:
-- Exact MCP tool name to use for creating drafts
-- Exact parameter shape (which fields, which values for "don't publish")
-- Whether the API returns a `draft_id` we can store in state.jsonl
-- Whether multiple integrations (linkedin + x) can be specified in a single call or require separate calls
+Write `docs/superpowers/notes/postiz-cli-findings.md` containing:
+- Exact `postiz posts:create` invocation for creating drafts (full command line)
+- Draft mechanism (flag, scheduled-far-future, etc.)
+- Whether the command returns a draft ID we can capture (parse from stdout JSON via `jq`)
+- Whether multiple integrations (linkedin + twitter) can be specified in one call via `-i "id1,id2"`
 - The integration-ID-to-platform mapping for KK's chosen accounts
-- Any quirks (rate limits, character limits enforced server-side, etc.)
+- Any quirks (rate limits, character limits enforced server-side, media handling rules — recall the SKILL.md hard rule that media MUST go through `postiz upload` first)
 
 Template:
 ```markdown
-# Postiz MCP Findings
+# Postiz CLI Findings
 
-## Tool to use for drafts
-- Tool: `mcp__postiz__schedulePostTool` (or whatever actual name)
+## Command for drafts
+- Invocation: `postiz posts:create -c "<content>" -i "<integration_id>" --draft` (or whatever actually works)
 - Draft mechanism: <flag | status | far-future schedule>
-- Exact parameter shape: <inline JSON>
 
-## Return shape
-- Field that contains the draft id: <name>
+## Return shape (stdout)
+- Field that contains the draft id (via jq): <e.g., `.id`>
+- Full sample return JSON: <inline>
 
-## Multi-platform behavior
-- One call per platform: yes/no
-- If one call: how to specify multiple integrations: <example>
+## Multi-integration behavior
+- One call for multiple integrations: yes (per QUICK_START: `-i "id1,id2,id3"`)
+- Confirmed in practice: yes/no
 
 ## Integration mapping (KK's chosen accounts)
 - linkedin: <integration_id> (handle: <display>)
-- x: <integration_id> (handle: <display>)
+- twitter: <integration_id> (handle: <display>)
 - instagram: <integration_id> (handle: <display>) — held in Slice D
 - youtube: <integration_id> (handle: <display>) — held in Slice D
+
+## Media handling note
+Per Postiz SKILL.md Hard Rule 2: any media file MUST go through `postiz upload` first;
+the returned `.path` is what gets passed to `-m`. Out of scope for Slice D (text-only)
+but relevant for Slice F/G when Instagram captions and Reels videos enter the pipeline.
 
 ## Quirks observed
 - <any character limits, rate limits, surprises>
@@ -116,8 +130,8 @@ In Postiz UI (or via MCP if supported), delete the throwaway test post.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add docs/superpowers/notes/postiz-mcp-findings.md
-git commit -m "docs: capture Postiz MCP draft semantics and integration mapping for storyteller"
+git add docs/superpowers/notes/postiz-cli-findings.md
+git commit -m "docs: capture Postiz CLI draft semantics and integration mapping for storyteller"
 ```
 
 ---
@@ -1360,7 +1374,7 @@ description: Use when KK wants to surface recent newsworthy product or company a
 
 ## Workflow
 
-1. **Load config** from `~/.storyteller/config.yaml`. If `sources.github.repos` is empty, stop and tell the user to add repos.
+1. **Load config** from `~/.storyteller/config.yaml`. If `sources.github.repos` is empty, stop and tell the user to add repos. If `publishing.postiz.integrations.linkedin` (or `.x`) is empty, stop and tell the user to run `postiz integrations:list` and fill them in.
 
 2. **Fetch signals in parallel** from each enabled source using `references/source-<name>.md`. Slice D enables `github` only. Each adapter returns Signal[]. Merge results.
 
@@ -1372,7 +1386,7 @@ description: Use when KK wants to surface recent newsworthy product or company a
 
 6. **Interactive mode only:** Show the ranked drafts as markdown. Loop on user edits ("tighten draft 2 hook", "kill X thread for draft 3", "redraft draft 1 with sharper angle") until the user says "ship it". Skip this step entirely in scheduled mode (Cowork) — proceed directly to step 7.
 
-7. **Publish:** For each draft NOT marked `hold: true`, push to Postiz as a draft (NEVER `publish: true`) using the tool and parameters documented in `docs/superpowers/notes/postiz-mcp-findings.md`. For drafts WITH `hold: true`, save to `~/.storyteller/pending-video/<signal_id>-<platform>.json`. Capture returned Postiz draft IDs. On push failure, retry once; on second failure, save the draft to `~/.storyteller/failed-pushes/` and continue.
+7. **Publish:** For each draft NOT marked `hold: true`, push to Postiz as a draft using the `postiz posts:create` CLI invocation documented in `docs/superpowers/notes/postiz-cli-findings.md` and the `references/publish-postiz.md` reference. NEVER use any flag that would publish immediately. For drafts WITH `hold: true`, save to `~/.storyteller/pending-video/<signal_id>-<platform>.json`. Capture returned Postiz draft IDs. On push failure, retry once; on second failure, save the draft to `~/.storyteller/failed-pushes/` and continue.
 
 8. **Notify Slack** using `notification.slack.template` with `{count}` (total drafts pushed) and `{top_title}` (title of highest-scored signal). Send via Slack MCP to `notification.slack.target`. **Append to state.jsonl** for each drafted signal: `{"signal_id": "...", "drafted_at": "<ISO>", "postiz_draft_ids": [...]}`.
 
@@ -1397,10 +1411,11 @@ Parse from the invocation prompt:
 
 ## Failure-mode anti-patterns (DO NOT do these)
 
-- Do NOT pass `publish: true` to Postiz under any circumstances. The user has explicitly forbidden auto-posting.
+- Do NOT publish to Postiz (i.e., do NOT omit the draft-creation mechanism documented in postiz-cli-findings.md). The user has explicitly forbidden auto-posting.
 - Do NOT skip step 3 (dedupe) — without it the same PR gets redrafted every run.
 - Do NOT generate drafts BEFORE scoring — only top-N signals get drafted.
 - Do NOT silently swallow scoring/drafting failures — surface them in the Slack notification.
+- Do NOT pass raw file paths or external URLs to `postiz posts:create -m` — Postiz rejects them. Media must first be uploaded via `postiz upload <file>` and the returned `.path` is what gets passed to `-m`. (Not relevant for Slice D text-only; documented for later slices.)
 ```
 
 - [ ] **Step 3: Verify word count**
@@ -1434,29 +1449,34 @@ git commit -m "feat(skill): flesh out 8-step workflow, modes, flags, and failure
 
 - [ ] **Step 1: Write the publisher reference**
 
-Write `skill/storyteller/references/publish-postiz.md`, using EXACT tool name and parameters from `docs/superpowers/notes/postiz-mcp-findings.md`:
+Write `skill/storyteller/references/publish-postiz.md`, using the EXACT `postiz posts:create` invocation form documented in `docs/superpowers/notes/postiz-cli-findings.md`:
 ````markdown
-# Publish — Postiz
+# Publish — Postiz (via CLI)
 
 Push a Draft to Postiz as a DRAFT (never publish immediately).
 
+**REQUIRED BACKGROUND:** The `postiz` Claude Code skill (from `postiz@claude-plugins-official`) — its SKILL.md describes the CLI's hard rules and command vocabulary.
+
 ## Input
 
-A Draft JSON object (LinkedIn, X, or Instagram — Reels never reaches this step, it's held).
+A Draft JSON object (LinkedIn or X in Slice D — Instagram and Reels are held, never reach this step).
 
 ## Rules
 
-- Always push as draft. Reference `docs/superpowers/notes/postiz-mcp-findings.md` for the exact mechanism (flag, status, or far-future date).
-- For X threads (`format: thread`), `content` is an array — pass it as the thread sequence per Postiz MCP's thread API.
-- For LinkedIn (`format: long-post`), `content` is a single string.
-- Instagram captions are HELD in Slice D (`hold: true`) and never reach this step.
+- Always push as draft using the mechanism captured in `docs/superpowers/notes/postiz-cli-findings.md` (flag, status enum, or far-future schedule date).
+- For X threads (`format: thread`), `content` is an array of strings — pass them per the CLI's thread syntax (likely `-c` repeated per post: `-c "post1" -c "post2"`).
+- For LinkedIn (`format: long-post`), `content` is a single string passed as one `-c`.
+- The integration ID for each platform comes from `~/.storyteller/config.yaml` `publishing.postiz.integrations.<platform>`.
+- The `postiz` CLI reads `POSTIZ_API_KEY` from the shell environment. The caller (this skill) must invoke Bash with that env var set.
+- Out of scope in Slice D but documented for later slices: media (images, video) must go through `postiz upload <file>` first; the returned `.path` is what gets passed to `-m`. NEVER pass raw filesystem paths or external URLs to `-m`.
 
 ## Steps
 
-1. Determine the Postiz integration ID for the draft's `platform`. Cache this once per run (use `integrationList` if needed).
-2. Build the request per `postiz-mcp-findings.md` for "create draft".
-3. Call the Postiz MCP tool. Capture the returned draft ID.
-4. On HTTP-style failure (timeout, 5xx, rate limit), retry once after 5 seconds. On second failure, return `{"status": "failed", "error": "<message>", "draft_json": <the input>}` so the caller can save it to `~/.storyteller/failed-pushes/`.
+1. Look up integration ID from `config.publishing.postiz.integrations[draft.platform]`. If empty, fail this draft and tell the user to run Task 1 step 4 to map integrations.
+2. Build the Bash invocation for `postiz posts:create` per the format-specific syntax above and the draft mechanism from findings.
+3. Run the Bash command. Capture stdout.
+4. Parse the returned draft ID via `jq -r '<field>'` (the exact field is in findings).
+5. On non-zero exit, retry once after 5 seconds. On second failure, return `{"status": "failed", "error": "<stderr message>", "draft_json": <the input>}` so the caller can save it to `~/.storyteller/failed-pushes/`.
 
 ## Output
 
@@ -1476,19 +1496,15 @@ For failure:
 In Claude Code:
 ```
 Read skill/storyteller/references/publish-postiz.md. For the LinkedIn draft in
-/tmp/linkedin-draft.json, describe in detail (don't execute) the Postiz MCP call
-you would make. Include: tool name, full parameter object, expected return shape.
+/tmp/linkedin-draft.json, print the exact Bash command (postiz posts:create ...)
+you would run to push it as a draft. Do NOT execute it.
 ```
-Verify the description matches `postiz-mcp-findings.md`. If it doesn't, tighten the reference.
+Verify the printed command matches `postiz-cli-findings.md`. Check: integration ID is correct, draft mechanism is correct, `-c` is properly quoted (no shell-escape bugs).
 
 - [ ] **Step 3: Live test with ONE draft**
 
-In Claude Code:
-```
-Now actually execute that Postiz MCP call from Step 2. After it returns, give me
-the draft ID. Do NOT publish — push as draft only.
-```
-Verify in Postiz UI: the draft appears under Drafts (not Scheduled, not Published).
+Execute the command from Step 2. Capture the JSON output and parse the draft ID.
+Verify in Postiz UI: the draft appears under Drafts (not Scheduled-soon, not Published).
 
 - [ ] **Step 4: Clean up the test draft in Postiz UI**
 
