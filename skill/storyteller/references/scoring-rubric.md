@@ -18,9 +18,20 @@ Each criterion contributes 0, 1, or 2 points. Sum the five. Cap the total at 10.
 | 2 | **Borrowable insight** — Jennifer can paraphrase in her next meeting and sound sharper | No reusable takeaway; pure announcement, log entry, or status update | Has a takeaway but it's well-known or only narrowly useful | Distinct, transferable mental model, framework, or numbered finding she'd screenshot for her CISO |
 | 3 | **Receipts vs generalities** — real outcomes, not abstract claims | Pure claims with no evidence ("AI will transform X") | Mix: some evidence, some assertion without backup | Concrete outcome with the numbers/diff/before-after that prove it actually happened |
 | 4 | **Operator voice over founder voice** — centers "what we saw doing the work" | Founder-journey framing ("how we built", "our ARR", "excited to announce") | Neutral — neither operator nor founder voice dominates | Practitioner-first: centers the engineering decision, the trade-off, what broke, what we learned doing the work |
-| 5 | **Problem-before-product** — if Transilience appears, problem dominates first 80% | Product/company pitch dominates; problem is an afterthought OR the post is internal HR/admin | Product and problem balanced, OR Transilience does not appear and the post stands on its own merits at a basic level | Transilience either doesn't appear at all (so this criterion defaults to 2) OR the pain lands hard in the first 80% before any product mention |
+| 5 | **Problem-before-product** — if Transilience appears, problem dominates first 80% | Product (Transilience) leads; problem appears late or not at all | Product and problem are balanced or interleaved | Problem dominates the first 80%; product (if present) only appears in the closing |
+
+**Criterion 5 is conditional.** If Transilience does not appear in the signal at all, criterion 5 defaults to 2 (not applicable, no penalty). This is the spec's intent — the criterion exists to discipline product-pitchy posts about Transilience specifically.
 
 **Score = sum, capped at 10.** Five criteria × 2 = 10 max, so the cap rarely binds, but apply it defensively.
+
+## Precedence
+
+Apply checks in this order, and stop at the first that fires:
+
+1. **Hard-zero check.** If the signal matches any hard-zero rule below, score = 0, write `why_postworthy` naming which rule fired, set `suggested_angle` to `"(hard-zero; no draft)"`. Skip the rubric.
+2. **5-criterion rubric.** If no hard-zero fires, score each criterion 0-2, sum, cap at 10.
+
+Edge case: a signal that contains "excited to announce" phrasing BUT ALSO contains substantive receipts and an extractable lesson is NOT a hard-zero — fall through to the rubric. The hard-zero rule is for material whose entire purpose IS the announcement, with no transferable substance.
 
 ## Hard zeros — score 0 and move on
 
@@ -56,7 +67,7 @@ Use both `summary` and `raw.body_excerpt` together. The `summary` is the scorer-
 Source-level failures must NEVER propagate as exceptions or prose. The orchestrator expects this prompt to always return a valid JSON array.
 
 - If the input is an empty array `[]`, return `[]` (no scores to produce).
-- If a signal is missing a required field (`id`, `title`, `summary`, or `raw.body_excerpt`), score it as **0**, set `why_postworthy` to `"Skipped — missing required field: <fieldname>"`, set `suggested_angle` to `"N/A — input incomplete."`, and continue with the rest.
+- If a signal is missing any of these 4 fields the rubric actually reads — `id`, `title`, `summary`, or `raw.body_excerpt` — score it 0, write `why_postworthy` naming the missing field, and continue with the rest. Other Signal fields (`source`, `url`, `timestamp`, `author`) are NOT required by this rubric and their absence is not an error here. Adapter-level field completeness is the orchestrator's concern, not the scorer's.
 - If a signal has `id` but no usable content, still emit an entry with the correct `signal_id` so the orchestrator can zip positionally.
 - Never throw. Never return prose. Never return `null`. Always return a JSON array (possibly empty).
 
@@ -68,7 +79,7 @@ Return a strict JSON array, one object per input signal, in the same order as th
 [
   {
     "signal_id": "<exact id from input>",
-    "score": 0,
+    "score": <integer 0-10>,
     "why_postworthy": "<one sentence — what makes this Jennifer-worthy, or why it isn't>",
     "suggested_angle": "<one sentence — angle that would maximise Jennifer-fit>"
   }
