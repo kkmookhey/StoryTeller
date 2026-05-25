@@ -33,18 +33,18 @@ The skill is invoked two ways:
 
 **Slice D scope clarification:** The skill is *architecturally* runnable in both modes from day one — the same `storyteller` code paths work whether invoked interactively or headlessly. However, Slice D only ships the interactive invocation; operationally enabling the daily Cowork schedule (cron config, headless-agent prompt, Slack notification routing) is Slice H. Slice D acceptance criteria only test interactive invocation.
 
-The skill orchestrates these MCPs and CLIs (assumed already connected and authenticated in KK's environment):
+The skill orchestrates these tools (assumed already connected and authenticated in KK's environment):
 
 | Tool | Type | Purpose in Slice D | Slice D status |
 |---|---|---|---|
-| GitHub MCP | MCP | Read merged PRs from configured personal repos | Active |
-| Postiz CLI (`postiz` command) | CLI (via Bash) | Push drafts (never auto-publish) | Active |
-| Slack MCP | MCP | Send "drafts ready" notification | Active |
+| `gh` CLI | CLI (via Bash) | Read merged PRs from configured personal repos | Active |
+| `postiz` CLI | CLI (via Bash) | Push drafts (never auto-publish) | Active |
+| Slack MCP (`mcp__claude_ai_Slack__*`) | MCP | Send "drafts ready" DM notification | Active |
 | Slack MCP (read) | MCP | Read messages from configured channels as signals | Held for Slice E |
 | Atlassian MCP | MCP | Read Confluence pages + Jira tickets as signals | Held for Slice E |
 | Descript MCP | MCP | Text → video → YouTube/Reels publishing | Held for Slice G |
 
-**Note on Postiz:** The Postiz Claude Code plugin (`postiz` from claude-plugins-official) is a CLI-wrapping skill, not an MCP server. It exposes `Bash(postiz:*)` invocations. The storyteller skill calls `postiz integrations:list`, `postiz posts:create -c ... -i <integration-id>`, etc. via the Bash tool. Authentication uses `POSTIZ_API_KEY` env var (set in the shell environment).
+**Note on GitHub and Postiz:** Both ship as CLI-wrapping Claude Code plugins, not MCP servers. The storyteller skill invokes them via the Bash tool — `gh pr list --state merged --json ... -R <owner>/<repo>` and `postiz posts:create -c ... -i <integration-id> -t draft -s <date>`. Authentication: `gh auth status` (already wired via your local gh credentials), and `POSTIZ_API_KEY` env var for Postiz (must be set in the shell environment).
 
 The skill loads two existing skill bundles as voice authorities:
 
@@ -454,11 +454,11 @@ The writing-plans phase should resolve these before coding:
 
 **External (must exist in KK's environment before install):**
 - Claude Code or Claude Desktop with skill support
-- GitHub MCP server configured and authenticated
-- Postiz account + connected social integrations (LinkedIn, X, Instagram, YouTube via OAuth in Postiz dashboard)
+- `gh` CLI installed and authenticated (`gh auth status` returns OK with `repo` scope)
+- Postiz account + connected social integrations (LinkedIn, X via OAuth in Postiz dashboard — Instagram, YouTube can be added for later slices)
 - `postiz` CLI installed globally (`npm install -g postiz`) — provided by the official Postiz Claude Code plugin
 - `POSTIZ_API_KEY` env var set in the shell environment so Bash-invoked `postiz` commands authenticate
-- Slack MCP server configured (write permission to DM target)
+- Slack MCP server configured (write permission to DM target — KK's user ID is `U0EXAMPLE01`)
 
 **Internal (KK's existing assets):**
 - `kk-voice` skill installed at `~/.claude/skills/kk-voice/`

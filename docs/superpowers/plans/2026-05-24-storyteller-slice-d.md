@@ -136,55 +136,72 @@ git commit -m "docs: capture Postiz CLI draft semantics and integration mapping 
 
 ---
 
-### Task 2: Verify GitHub MCP can list merged PRs across configured repos
+### Task 2: Verify `gh` CLI can list merged PRs across configured repos
 
 **Files:**
-- Append to: `docs/superpowers/notes/github-mcp-findings.md` (create if missing)
+- Create: `docs/superpowers/notes/github-cli-findings.md`
 
-- [ ] **Step 1: List GitHub MCP tools**
+**ARCHITECTURE NOTE:** GitHub access uses the `gh` CLI, not an MCP server. No `mcp__github__*` tools exist in the current environment. The official `github@claude-plugins-official` plugin is a CLI-wrapping skill.
 
-Run in Claude Code:
-```
-List MCP tools whose name contains "github" or starts with "mcp__github".
-Show the schema for the tool that lists pull requests.
-```
-Expected: at least one tool for listing PRs (likely `list_pull_requests` or `search_issues`). Capture the parameter shape (state filter, sort, repo specification).
+- [ ] **Step 1: Confirm `gh` CLI is installed and authenticated**
 
-- [ ] **Step 2: Test fetching merged PRs from one personal repo**
+```bash
+gh auth status
+```
+Expected: authenticated as `kkmookhey` with `repo` scope. (Already verified earlier in repo setup.)
 
-Run in Claude Code, replacing `<repo>` with one of your real personal repos:
+- [ ] **Step 2: Test fetching merged PRs from a real personal repo**
+
+```bash
+gh pr list --repo kkmookhey/ciso-copilot --state merged --limit 5 \
+  --json number,title,url,mergedAt,author,body,additions,deletions
 ```
-Using the GitHub MCP, list all PRs merged into the default branch of kkmookhey/<repo> in the last 7 days. For each, return: number, title, url, merged_at, author, body (first 500 chars), and additions+deletions.
+Expected: JSON array of recent merged PRs with the listed fields.
+
+For the lookback-days filter the source adapter will use:
+```bash
+gh pr list --repo <owner>/<repo> --state merged --limit 100 \
+  --search "merged:>=$(date -u -v-7d +%Y-%m-%d)" \
+  --json number,title,url,mergedAt,author,body,additions,deletions
 ```
-Expected: a list of PRs (could be empty if no recent activity) in a structured shape we can normalize into the Signal type.
+(`-v-7d` is the macOS `date` syntax; Linux uses `--date '7 days ago'` instead. Document both in findings.)
 
 - [ ] **Step 3: Document findings**
 
-Write `docs/superpowers/notes/github-mcp-findings.md`:
+Write `docs/superpowers/notes/github-cli-findings.md`:
 ```markdown
-# GitHub MCP Findings
+# gh CLI Findings
 
-## Tool to list merged PRs
-- Tool: <exact name>
-- Parameter shape for "merged PRs in repo in last N days": <inline example>
+## Command to list merged PRs in a date range
+- macOS: `gh pr list --repo <owner>/<repo> --state merged --limit 100 \
+    --search "merged:>=$(date -u -v-<N>d +%Y-%m-%d)" \
+    --json number,title,url,mergedAt,author,body,additions,deletions`
+- Linux: replace `date -v-<N>d` with `date -d '<N> days ago'`
 
 ## Return shape
-- Fields available per PR: <list>
-- How to access PR diff stats: <if separate call required, name it>
+- Top-level: JSON array
+- Per PR fields available (via --json): number, title, url, mergedAt, author{login,name},
+  body, additions, deletions, baseRefName, headRefName, labels, etc.
+- `author` is an object; access login via `.author.login`
 
 ## Multi-repo behavior
-- Can list across multiple repos in one call: yes/no
-- If no: pattern for parallel calls: <example>
+- One repo per `gh pr list` invocation (no built-in multi-repo flag)
+- For multiple repos: shell loop or `xargs -P` for parallelism
+
+## Pagination
+- Default limit: 30. Use --limit to raise. For >1000 PRs, switch to gh api with pagination.
 
 ## Quirks
-- <pagination defaults, rate limits, etc.>
+- `--search "merged:>=DATE"` uses GitHub Issues search syntax under the hood
+- Empty body field appears as "" not null
+- mergedAt is ISO 8601 with Z suffix
 ```
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add docs/superpowers/notes/github-mcp-findings.md
-git commit -m "docs: capture GitHub MCP PR-listing behavior for storyteller source adapter"
+git add docs/superpowers/notes/github-cli-findings.md
+git commit -m "docs: capture gh CLI PR-listing patterns for storyteller source adapter"
 ```
 
 ---
@@ -229,7 +246,9 @@ sources:
     enabled: true
     repos:
       # Add your personal repos here as "owner/name"
-      # - kkmookhey/your-repo
+      # - kkmookhey/ciso-copilot
+      # - kkmookhey/basecamp-ai-sec
+      # - kkmookhey/communitytools
     only_authored_by_me: false
     lookback_days: 7
 
@@ -260,14 +279,14 @@ publishing:
     push_as_draft: true        # ALWAYS true. Never auto-publishes.
     workspace_id: null
     integrations:              # Filled in during Task 1 (integration mapping).
-      linkedin: ""             # Postiz integration_id for your LinkedIn account
-      x: ""                    # Postiz integration_id for your X account
-      instagram: ""            # Held in Slice D; record anyway for later slices
-      youtube: ""              # Held in Slice D; record anyway for later slices
+      linkedin: "<your-linkedin-integration-id>"  # @kkmookhey (verified 2026-05-24)
+      x: "<your-x-integration-id>"         # @kkmookhey (verified 2026-05-24)
+      instagram: ""            # Not yet connected; for Slice F
+      youtube: ""              # Not yet connected; for Slice G
 
 notification:
   slack:
-    target: ""                 # Your Slack user ID (e.g. U0123456789) or channel ID
+    target: "U0EXAMPLE01"      # KK's Slack user ID (self-DM)
     template: "{count} drafts queued in Postiz. Top: '{top_title}'. /storyteller to review."
 
 state:
@@ -1369,7 +1388,9 @@ description: Use when KK wants to surface recent newsworthy product or company a
 
 ## Prerequisites
 
-- MCPs configured and authenticated: GitHub, Postiz, Slack (write).
+- `gh` CLI installed and authenticated (`gh auth status` returns OK).
+- `postiz` CLI installed and `POSTIZ_API_KEY` env var set in the shell.
+- Slack MCP configured (the `mcp__claude_ai_Slack__*` tools must be available).
 - Config exists at `~/.storyteller/config.yaml`. If missing, copy from this skill's `sample-config.yaml` and stop with a message telling KK to fill in repos and Slack target.
 
 ## Workflow
