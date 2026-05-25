@@ -33,6 +33,14 @@ A single ScoredSignal — the Signal envelope plus the scorer's verdict (same sh
 
 The orchestrator only calls this drafter for signals with `score >= 7`. Note: the scorer is Jennifer-tuned, so `why_postworthy` and `suggested_angle` may carry LinkedIn framing. **Re-target the substrate for Meera/Rohan — do not copy the Jennifer angle verbatim.** Use `signal.title`, `signal.summary`, and `signal.raw.body_excerpt` as the receipts. Do NOT invent numbers, named tools, or scenarios the signal doesn't support.
 
+**Jennifer markers to scrub** (these read fine on LinkedIn but signal "wrong audience" on @settlingforless1):
+- "Deputy CISO", "CISO", "the board" (as a framing device) — name the person actually affected instead
+- "POC", "vendor selection", "compliance taxonomy", "mid-market enterprise" — replace with concrete consumer/tech-adjacent stakes
+- "borrowable in your next meeting" / "your QBR" — replace with concrete forward-prompt for Meera, or skip for Rohan
+- "board memo", "executive readout" — name the operator-level impact instead
+
+If a Jennifer marker has to stay because it IS the stakes ("this breaks the dashboard the Deputy CISO actually uses"), constrain it to a single noun-of-fact mention, never the framing.
+
 ## Step 1 — Audience classification (do this BEFORE drafting)
 
 Per kk-short-form's 60/30/10 ratio, classify the signal as exactly one of:

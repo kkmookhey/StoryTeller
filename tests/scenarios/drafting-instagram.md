@@ -78,6 +78,18 @@ if failed:
     for f in failed:
         print(f"  - #{f[\"item\"]} {f[\"name\"]}: {f[\"reason\"]}")
     raise SystemExit(1)
-print("PASS: all 10 kk-short-form checks (4/9/10 deferred to Reels script)")
+deferred_ids = {4, 9, 10}
+expected_reason = "deferred to Reels (video item)"
+for it in items:
+    if it["item"] in deferred_ids:
+        assert it["passes"] is True and it["reason"] == expected_reason, (
+            f"item {it[\"item\"]} must be deferred with the exact reason string "
+            f"\"{expected_reason}\" — got reason: {it[\"reason\"]!r}"
+        )
+    else:
+        assert it["reason"] != expected_reason, (
+            f"item {it[\"item\"]} used the deferral reason but is not a video-specific item"
+        )
+print("PASS: all 10 kk-short-form checks (4/9/10 deferred with exact reason; 1-3, 5-8 passed normally)")
 '
 ```
