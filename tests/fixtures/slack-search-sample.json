@@ -1,0 +1,103 @@
+[
+  {
+    "channel_id": "C0EXAMPLE01",
+    "channel_name": "dev_all",
+    "ts": "1778082458.254019",
+    "user": "U0EXAMPLE01",
+    "user_display_name": "KK Mookhey",
+    "text": "Folks - did another thing. Voice App now integrated with [REDACTED-product] :slightly_smiling_face:. So real data, real conversations. Watch the full video for tadka/spice at the end...:-D",
+    "reactions": [
+      {"name": "two_hearts", "count": 2},
+      {"name": "+1", "count": 4},
+      {"name": "fire", "count": 3},
+      {"name": "rocket", "count": 2}
+    ],
+    "reaction_count": 11,
+    "reply_count": 11,
+    "is_thread_root": true,
+    "permalink": "https://your-workspace.slack.com/archives/C0EXAMPLE01/p1778082458254019?thread_ts=1778082458.254019&cid=C0EXAMPLE01",
+    "files": [
+      {"id": "F0B1USAP7PD", "title": "[REDACTED-product] Voice Demo.mp4", "mimetype": "video/mp4", "size_bytes": 5872293}
+    ],
+    "is_bot": false,
+    "_source_stage": 1,
+    "_source_query": "has::fire: in:<#C0EXAMPLE01> after:2026-05-01"
+  },
+  {
+    "channel_id": "C0EXAMPLE01",
+    "channel_name": "dev_all",
+    "ts": "1778156022.902729",
+    "user": "U0EXAMPLE06",
+    "user_display_name": "[REDACTED-teammate-A]",
+    "text": "Yes I have given that, thanks for pointing it out :raised_hands:",
+    "reactions": [
+      {"name": "raised_hands", "count": 5},
+      {"name": "+1", "count": 1}
+    ],
+    "reaction_count": 6,
+    "reply_count": 0,
+    "is_thread_root": false,
+    "permalink": "https://your-workspace.slack.com/archives/C0EXAMPLE01/p1778156022902729?thread_ts=1778155911.520269&cid=C0EXAMPLE01",
+    "files": [],
+    "is_bot": false,
+    "_source_stage": 1,
+    "_source_query": "has::raised_hands: in:<#C0EXAMPLE01> after:2026-05-01"
+  },
+  {
+    "channel_id": "C0EXAMPLE01",
+    "channel_name": "dev_all",
+    "ts": "1779103159.974799",
+    "user": "U0EXAMPLE08",
+    "user_display_name": "[REDACTED-teammate-B]",
+    "text": "<@U0EXAMPLE09|[REDACTED-teammate-C]> 1 feedback on Demo forge, I was trying to use it for the video yesterday, it has a lot of spelling mistakes etc and data hallucination for the data it generates. :sweat_smile:",
+    "reactions": [
+      {"name": "eyes", "count": 3}
+    ],
+    "reaction_count": 3,
+    "reply_count": 8,
+    "is_thread_root": true,
+    "permalink": "https://your-workspace.slack.com/archives/C0EXAMPLE01/p1779103159974799?thread_ts=1779103159.974799&cid=C0EXAMPLE01",
+    "files": [],
+    "is_bot": false,
+    "_source_stage": 1,
+    "_source_query": "has:reactions in:<#C0EXAMPLE01> after:2026-05-01"
+  },
+  {
+    "channel_id": "C0EXAMPLE01",
+    "channel_name": "dev_all",
+    "ts": "1779467204.280279",
+    "user": "U0EXAMPLE07",
+    "user_display_name": "[REDACTED-teammate-D]",
+    "text": "I have deployed the performance fixes with redis cache on both dev and test environments. Please have a look at it. In case any issues pop up urgently. Ping me I will be carrying the laptop with me.",
+    "reactions": [
+      {"name": "saluting_face", "count": 1}
+    ],
+    "reaction_count": 1,
+    "reply_count": 0,
+    "is_thread_root": false,
+    "permalink": "https://your-workspace.slack.com/archives/C0EXAMPLE01/p1779467204280279",
+    "files": [],
+    "is_bot": false,
+    "_source_stage": 1,
+    "_source_query": "has:reactions in:<#C0EXAMPLE01> after:2026-05-19"
+  },
+  {
+    "channel_id": "C0EXAMPLE01",
+    "channel_name": "dev_all",
+    "ts": "1779397566.608189",
+    "user": "U0EXAMPLE05",
+    "user_display_name": "[REDACTED-teammate-E]",
+    "text": "Hey all, pushed few changes. To all env. Test, dev and prod.\nFix few changes\nAdded mobile responsive on any browser\nMade it PWA, it feels good. :blush:\nThere few more bugs as im little sleepy, shoot them the ETA is tomorrow :grinning:",
+    "reactions": [
+      {"name": "tada", "count": 2}
+    ],
+    "reaction_count": 2,
+    "reply_count": 6,
+    "is_thread_root": true,
+    "permalink": "https://your-workspace.slack.com/archives/C0EXAMPLE01/p1779397566608189?thread_ts=1779397566.608189&cid=C0EXAMPLE01",
+    "files": [],
+    "is_bot": false,
+    "_source_stage": 2,
+    "_source_query": "slack_read_channel oldest=<7d-ago-unix> filtered to reply_count>=3"
+  }
+]
