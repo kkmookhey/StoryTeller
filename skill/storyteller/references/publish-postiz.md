@@ -89,7 +89,10 @@ Repeat `-c` for every post in the thread (3 to 5 posts per the X drafter contrac
 ### Key invocation rules (from findings doc)
 
 - `-t draft` — explicit draft-type flag. Without this, Postiz defaults to `schedule` and the post would be queued for publish at `-s` time. Always pass `-t draft`.
-- `-s "<current-utc-timestamp>"` — REQUIRED even for drafts (the CLI rejects calls without `-s`). Use the **current UTC timestamp at the moment of creation**, captured via `date -u +%Y-%m-%dT%H:%M:%SZ`. Postiz stores this as `publishDate` and surfaces it prominently in the UI; using a meaningful timestamp (when the draft was authored) is better provenance than a far-future placeholder. The date is ignored for `-t draft` publishing — when KK clicks Schedule in the UI later, Postiz will prompt him to pick a future date since "now or earlier" can't be a schedule target. **Do NOT use `2099-01-01T00:00:00Z` or any other far-future placeholder** — those make the UI confusing and the drafts disappear from `posts:list` default window.
+- `-s "<future-utc-timestamp>"` — REQUIRED even for drafts (the CLI rejects calls without `-s`). Use **now + 24h**, captured via `date -u -v+1d +%Y-%m-%dT%H:%M:%SZ` (macOS) or `date -u -d "+1 day" +%Y-%m-%dT%H:%M:%SZ` (Linux). The Postiz Cloud UI silently hides any post whose `publishDate` is in the past (verified empirically 2026-05-25: drafts with `publishDate=now` were invisible in Calendar across All/Scheduled/Draft/Published filters; only future-dated ones rendered). The date is ignored for the eventual scheduled publish — KK reschedules in the UI before going live — but it gates the draft's visibility while it sits in the review queue. **Anti-patterns to avoid:**
+  - `now` / past timestamps → drafts vanish from UI (Postiz hides past-dated drafts).
+  - `2099-01-01T00:00:00Z` or other far-future placeholders → drafts fall outside `posts:list` default `[now-30d, now+30d]` window and need explicit `--startDate/--endDate` to find via CLI.
+  - `now + 24h` is the sweet spot: future enough for UI, near enough to stay inside the default `posts:list` window.
 - `-i "<integration_id>"` — looked up from `config.publishing.postiz.integrations[draft.platform]`. For Slice D: LinkedIn = `<your-linkedin-integration-id>`, X = `<your-x-integration-id>`.
 - `-d 0` — X thread only. Zero-minute delay between thread posts so they fire as a true thread when published. Omit `-d` for LinkedIn.
 - `POSTIZ_API_KEY` — must be set in the shell environment when invoking. The storyteller skill itself does NOT set it; KK's shell does (via `~/.zshrc`). If missing, precheck #5 catches it.
@@ -166,7 +169,7 @@ Once parsed, extract:
 
 Note: the return is an ARRAY (one entry per integration). In Slice D we always call with ONE `-i` so we always get one entry. For Slice E+ (multi-integration single call), iterate the array.
 
-**Verification via `posts:list`:** the default date window is `[now - 30d, now + 30d]`. Drafts created with the current-timestamp convention will appear here without extra flags. (Historical note: a previous convention used `2099-01-01T00:00:00Z` as a placeholder; those drafts fell outside the default window and needed an explicit `--startDate "2099-01-01T00:00:00Z" --endDate "2099-01-02T00:00:00Z"` to find. That convention was abandoned 2026-05-25 — see the `-s` flag rule above.)
+**Verification via `posts:list`:** the default date window is `[now - 30d, now + 30d]`. Drafts created with the `now + 24h` convention land in tomorrow's slot and appear here without extra flags. (Historical note: two prior conventions failed for different reasons. (1) `2099-01-01T00:00:00Z` placeholders fell outside the default window and needed explicit `--startDate/--endDate` to find via CLI. (2) `now` / current-timestamp made drafts invisible in the Postiz Cloud UI because the UI silently hides past-dated posts across ALL filters. Both abandoned 2026-05-25 in favor of `now + 24h`.)
 
 ## Error handling
 

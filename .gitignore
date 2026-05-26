@@ -49,3 +49,6 @@ secrets/
 # Logs
 *.log
 logs/
+
+# Videos (Remotion project + rendered output — local only)
+Videos/
