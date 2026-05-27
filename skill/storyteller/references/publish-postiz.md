@@ -4,7 +4,9 @@ Push a single Draft to Postiz as a DRAFT post (never published immediately).
 
 **REQUIRED:** Read `docs/superpowers/notes/postiz-cli-findings.md` for the exact CLI semantics. This reference encodes the operational invocation; that note is the source of truth if the CLI behavior is ever in question.
 
-**REQUIRED BACKGROUND:** The `postiz` Claude Code skill (from `postiz@claude-plugins-official`) — its SKILL.md describes the CLI's hard rules. Specifically: media files MUST go through `postiz upload` first; raw paths or external URLs to `-m` are rejected. (Out of scope for Slice D text-only, documented for later slices.)
+**REQUIRED BACKGROUND:** The `postiz` Claude Code skill (from `postiz@claude-plugins-official`) — its SKILL.md describes the CLI's hard rules. Specifically: media files MUST go through `postiz upload` first; raw paths or external URLs to `-m` are rejected.
+
+**Image attachment** (Slice F+): if the orchestrator generated a shared image for the signal (`~/.storyteller/images/<safe_signal_id>.png`), upload it once and attach to the corresponding `-c` post. See "Media upload" below.
 
 ## Input
 
@@ -56,23 +58,70 @@ If any precheck fails, return the failure envelope WITHOUT calling the CLI:
 {"status": "failed", "platform": "<draft.platform>", "error": "<short reason>", "draft_json": <the input draft>}
 ```
 
+## Media upload (when an image is available for this signal)
+
+Before calling `posts:create`, upload the image once. Cache the result; if the same image is attached to multiple posts in this run (LinkedIn AND X for the same signal), upload ONCE and reuse the returned reference.
+
+Verified empirically 2026-05-26: `postiz upload <file>` prints a banner line then a JSON object. Pin to the `.path` key, which is the public uploads URL the publishing step needs.
+
+```bash
+# The image path returned by gen_image.sh — note extension may be .jpg OR .png
+# depending on what Gemini returned. The orchestrator should keep the actual
+# path that gen_image.sh echoed.
+IMG="$IMG_PATH_FROM_GEN_IMAGE"
+MEDIA_REF=""
+if [[ -f "$IMG" ]]; then
+  UPLOAD_JSON=$(postiz upload "$IMG" 2>&1 | grep -v '^✅')
+  MEDIA_REF=$(echo "$UPLOAD_JSON" | jq -r '.path // empty' 2>/dev/null)
+  if [[ -z "$MEDIA_REF" ]]; then
+    echo "postiz upload returned unexpected shape: $UPLOAD_JSON" >&2
+    # Continue text-only; image is enhancement, not gate.
+  fi
+fi
+```
+
+Reference return shape (2026-05-26):
+```json
+{
+  "id": "2baa54d4-50c8-4e64-820d-a6bc3fc6a18b",
+  "name": "1CmKuOurNd.jpg",
+  "originalName": null,
+  "path": "https://uploads.postiz.com/1CmKuOurNd.jpg",
+  "thumbnail": null,
+  "alt": null
+}
+```
+
+`.path` is what `posts:create -m` consumes. `.id` is the internal uploads-table ID and is NOT what `-m` accepts.
+
+**Per-format attachment rules:**
+- **LinkedIn:** ONE image, attached to the single `-c`. Pass `-m "$MEDIA_REF"` once.
+- **X thread:** image attaches to POST 1 ONLY by default — anchor the visual to the hook. Pass `-m "$MEDIA_REF"` ONCE, right after the first `-c`. Subsequent `-c` posts get no `-m`. Per the CLI examples, `-m` applies to the immediately preceding `-c` when used multi-time; a single `-m` after the first `-c` attaches there only.
+- **If `MEDIA_REF` is empty** (no image, or upload failed): omit `-m` entirely. Posts publish text-only.
+
 ## The Bash invocation (per format)
 
-### LinkedIn long-post (one `-c`)
+### LinkedIn long-post (one `-c`, optional one `-m`)
 
 ```bash
 postiz posts:create \
   -c '<draft.content, shell-escaped>' \
+  ${MEDIA_REF:+-m "$MEDIA_REF"} \
   -t draft \
   -s "<current-utc-timestamp>" \
   -i "<integration_id>"
 ```
 
+The `${MEDIA_REF:+-m "$MEDIA_REF"}` expands to `-m <ref>` when set, or expands to nothing when empty — clean text-only fallback without conditional branching.
+
 ### X thread (repeated `-c` per post, `-d 0` for no delay between thread posts)
+
+Image attaches to post 1 only. Place `-m "$MEDIA_REF"` immediately after the first `-c`.
 
 ```bash
 postiz posts:create \
   -c '<draft.content[0]>' \
+  ${MEDIA_REF:+-m "$MEDIA_REF"} \
   -c '<draft.content[1]>' \
   -c '<draft.content[2]>' \
   -d 0 \

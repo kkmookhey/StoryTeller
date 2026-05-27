@@ -16,18 +16,20 @@ Orchestrate the pipeline. Detail lives in `references/`.
 5. **Present idea menu** (interactive). Render candidates as markdown table: index, score, source, title, `why_postworthy`, `suggested_angle`. Mirror to `~/.storyteller/last-ideas.json`.
 6. **Wait for user pick** (interactive) per `references/pick-parser.md`. Scheduled: auto-pick top-`config.scoring.top_n`.
 7. **Draft** each PICKED signal in every `enabled: true` format per `references/drafting-*.md`. On `status: "error"` with routing hint, log and continue; otherwise save input to `~/.storyteller/failed-pushes/<safe_signal_id>-<format>.json`.
-8. **Review loop** (interactive). Loop on edits ("tighten 2's hook", "redraft 1") until "ship it".
-9. **Publish + notify + write state.** Per `references/publish-postiz.md`: for each draft NOT `hold: true`, invoke Postiz CLI to create a **draft** (never published); for `hold: true`, save to `~/.storyteller/pending-video/<safe_signal_id>-<platform>.json`. Retry once; second failure → `~/.storyteller/failed-pushes/`. Send `notification.slack.template` via `mcp__claude_ai_Slack__slack_send_message` to `notification.slack.target`. Append per drafted signal to `~/.storyteller/state.jsonl`: `{"signal_id":"...","drafted_at":"<ISO>","postiz_drafts":[{"platform":"...","postId":"...","integration":"..."}]}`.
+7.5. **Generate image** (one per picked signal, shared across LinkedIn + X) per `references/image-gen.md` unless `--no-images` is set. Save to `~/.storyteller/images/<safe_signal_id>.png`. Failures degrade gracefully — text posts still publish.
+8. **Review loop** (interactive). Loop on edits ("tighten 2's hook", "redraft 1", "regen image 2") until "ship it".
+9. **Publish + notify + write state.** Per `references/publish-postiz.md`: for each draft NOT `hold: true`, upload the signal's image via `postiz upload` (if present) then invoke `postiz posts:create` with `-m <ref>` to create a **draft** (never published); for `hold: true`, save to `~/.storyteller/pending-video/<safe_signal_id>-<platform>.json`. Retry once; second failure → `~/.storyteller/failed-pushes/`. Send `notification.slack.template` via `mcp__claude_ai_Slack__slack_send_message` to `notification.slack.target`. Append per drafted signal to `~/.storyteller/state.jsonl`: `{"signal_id":"...","drafted_at":"<ISO>","postiz_drafts":[{"platform":"...","postId":"...","integration":"..."}]}`.
 
 ## Modes
 - **Interactive:** `/storyteller`. Includes steps 5, 6, 8 (menu, pick, review).
 - **Scheduled (Cowork):** Skips 5, 6, 8. Auto-picks top-`top_n`.
 
 ## Flags
-- `--dry-run`: run 1-7; step 6 auto-ships first N picks; step 9 skips push/state/Slack.
+- `--dry-run`: run 1-7.5; step 6 auto-ships first N picks; step 9 skips push/state/Slack.
 - `--source <name>`: in step 2, only fetch named source.
 - `--no-postiz`: skip step 9 push; still save held and write state.
 - `--no-notify`: skip Slack send; still write state.
+- `--no-images`: skip step 7.5; publish text-only.
 
 ## Failure-mode anti-patterns
 - Do NOT publish to Postiz — always draft per `references/publish-postiz.md`. Auto-posting forbidden.
@@ -37,10 +39,12 @@ Orchestrate the pipeline. Detail lives in `references/`.
 - Do NOT silently swallow scoring/drafting failures — surface in Slack.
 - Do NOT push `hold: true` drafts; they go to `~/.storyteller/pending-video/`.
 - Do NOT pass raw paths or URLs to `postiz posts:create -m` — upload via `postiz upload` first.
+- Do NOT block publishing on image-gen failure. Text-only is a valid fallback.
 
 ## Prerequisites
 - `gh` authenticated (`gh auth status` OK).
 - `postiz` installed; `POSTIZ_API_KEY` set.
+- `GEMINI_API_KEY` set in env OR `Gemini Key.txt` present in `$HOME/Projects/StoryTeller/` (the `gen_image.sh` helper handles both). Skip if running `--no-images`.
 - Slack MCP (`mcp__claude_ai_Slack__*`) available.
 - `~/.storyteller/config.yaml` exists; if missing, copy `sample-config.yaml` and pause for repos.
 
