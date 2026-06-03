@@ -51,7 +51,7 @@ NEXT STEPS:
   3. Ensure POSTIZ_API_KEY is available to your shell. If not yet persistent,
      add this to your ~/.zshrc (replace the path if your key file is elsewhere):
 
-       export POSTIZ_API_KEY="$(tr -d '[:space:]' < '$HOME/Projects/StoryTeller/Postiz Key.txt')"
+       export POSTIZ_API_KEY="$(tr -d '[:space:]' < "${REPO_ROOT}/Postiz Key.txt")"
 
      Then either: source ~/.zshrc  OR  open a new terminal so Claude Code inherits it.
   4. In Claude Code:

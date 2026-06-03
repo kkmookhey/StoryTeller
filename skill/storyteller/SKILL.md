@@ -44,7 +44,7 @@ Orchestrate the pipeline. Detail lives in `references/`.
 ## Prerequisites
 - `gh` authenticated (`gh auth status` OK).
 - `postiz` installed; `POSTIZ_API_KEY` set.
-- `GEMINI_API_KEY` set in env OR `Gemini Key.txt` present in `$HOME/Projects/StoryTeller/` (the `gen_image.sh` helper handles both). Skip if running `--no-images`.
+- `GEMINI_API_KEY` set in env OR `Gemini Key.txt` present at the StoryTeller repo root (the `gen_image.sh` helper handles both; override with `GEMINI_KEY_FILE` env var). Skip if running `--no-images`.
 - Slack MCP (`mcp__claude_ai_Slack__*`) available.
 - `~/.storyteller/config.yaml` exists; if missing, copy `sample-config.yaml` and pause for repos.
 

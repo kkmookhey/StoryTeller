@@ -52,6 +52,6 @@
 3. **No regressions vs Slice D.** Same 12-draft output for the same 3 auto-picks. The new menu+pick steps add interactive surface without breaking the underlying drafter contracts.
 
 ## Outstanding KK actions (Task 8 + Task 10)
-1. **Enable Slack source** by adding channel IDs to `~/.storyteller/config.yaml > sources.slack.channels` (suggested: from probe — `C0EXAMPLE01` #dev_all, `C0EXAMPLE02` #dev-marketing, `C0EXAMPLE04` #transilience-omega-secops)
+1. **Enable Slack source** by adding channel IDs to `~/.storyteller/config.yaml > sources.slack.channels` (find IDs via `mcp__claude_ai_Slack__slack_search_channels`)
 2. **Set `sources.slack.enabled: true`** in user config
 3. **Run interactive `/storyteller`** to exercise the menu + pick path live (Task 10)

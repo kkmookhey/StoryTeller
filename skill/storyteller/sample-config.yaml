@@ -16,11 +16,10 @@ sources:
     enabled: true                  # Slice E
     channels:
       # Add real Slack channel IDs here. Use mcp__claude_ai_Slack__slack_search_channels to find them.
-      # KK's reachable channels (per Task 1 probe 2026-05-26):
-      # - C0EXAMPLE01  # #dev_all
-      # - C0EXAMPLE02  # #dev-marketing
-      # - C0EXAMPLE03  # #general
-      # - C0EXAMPLE04  # #transilience-omega-secops
+      # Examples (replace with your own):
+      # - C0EXAMPLE01  # #your-eng-channel
+      # - C0EXAMPLE02  # #your-marketing-channel
+      # - C0EXAMPLE03  # #your-general-channel
     lookback_days: 7
     min_reactions: 3               # Stage 1 threshold (reactions filter)
     min_replies: 3                 # Stage 2 (thread-root fallback) threshold
@@ -47,15 +46,15 @@ publishing:
   postiz:
     push_as_draft: true        # ALWAYS true. Never auto-publishes.
     workspace_id: null
-    integrations:              # Verified 2026-05-24 via postiz integrations:list
-      linkedin: "<your-linkedin-integration-id>"  # @kkmookhey
-      x: "<your-x-integration-id>"         # @kkmookhey
+    integrations:              # Run `postiz integrations:list` to find yours
+      linkedin: "<your-linkedin-integration-id>"
+      x: "<your-x-integration-id>"
       instagram: ""            # Not yet connected; for Slice F
       youtube: ""              # Not yet connected; for Slice G
 
 notification:
   slack:
-    target: "U0EXAMPLE01"      # KK's Slack user ID (self-DM)
+    target: "<your-slack-user-id>"   # Self-DM target (find via slack_search_users)
     template: "{count} drafts queued in Postiz. Top: '{top_title}'. /storyteller to review."
 
 state:
