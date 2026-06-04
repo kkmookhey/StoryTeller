@@ -2,9 +2,35 @@
 
 **From the team at [Transilience AI](https://www.transilience.ai).** Open-source (MIT), local-first, and built for operators who'd rather ship than schedule meetings about shipping.
 
-Turn the work you're already shipping — GitHub PRs, Slack threads with traction, paid-ad ideas — into ranked, voice-correct social-media drafts across LinkedIn, X, Instagram, and Reels. Local-first. Never auto-publishes. You stay in control.
+Grade any LinkedIn post in 30 seconds — yours, a competitor's, a viral thread. `/grade-post <url>` returns a 0–10 score against a real audience persona and rewrites the post into a version that would score 7+. Works the moment install finishes; no config required.
+
+Or use the full pipeline: turn the work you're already shipping — GitHub PRs, Slack threads with traction, paid-ad ideas — into ranked, voice-correct social-media drafts across LinkedIn, X, Instagram, and Reels. Local-first. Never auto-publishes. You stay in control.
 
 This is a set of Claude Code skills, not a SaaS. It runs on your machine, uses your API keys, and writes drafts you review before anything goes live.
+
+---
+
+## What `/grade-post` looks like on a real post
+
+Run on a [Todyl CMMC post](https://www.linkedin.com/posts/is-your-msp-ready-for-cmmc-enforcement-ugcPost-7384334578162941953-CwPC/):
+
+> ## Grade: 3 / 10 — "Vendor pitch with a deadline glued to it"
+>
+> | # | Criterion | Score | Why |
+> |---|---|---|---|
+> | 1 | Specific operational substance | 1 / 2 | Names CMMC, FCI, CUI, October 2026 — but no numbers, no named tools, no failure modes. |
+> | 2 | Borrowable insight | 1 / 2 | The deadline is borrowable in a DM; the framework is unsurprising. |
+> | 3 | Receipts vs generalities | 0 / 2 | Every concrete claim is gated behind "this eBook explains…" — the post itself proves nothing. |
+> | 4 | Operator voice | 0 / 2 | Pure vendor copy ("If you or your clients…") — no practitioner POV. |
+> | 5 | Problem-before-product | 1 / 2 | Problem first sentence, eBook by sentence three — too fast a pivot. |
+>
+> **Lead failure:** Receipts are entirely deferred to the eBook — the post itself proves nothing about the audit pattern or the common failure modes that would make a CISO stop scrolling.
+>
+> ## Rewrite that scores 7+
+>
+> The DoD will require CMMC in all defense contracts by October 2026. We just audited [N — your real number] mid-size defense MSPs against Level 2 controls. Six assumed Level 1 was enough — it's not. Two had FCI flowing through unencrypted Slack. Three were running unmanaged EDR on the same hosts processing CUI. The deadline is the easy part. The audit pattern is what most MSPs are missing. Three controls we'd fix tomorrow: SC-13 (cryptographic protection — most MSPs assume HTTPS counts; it doesn't), CM-7 (least functionality on the contract host), and AC-2 (account management on the file-share). Happy to share the audit checklist if useful — DM.
+
+That's the format every screenshot carries. The footer attribution at the bottom of each grade links back to this repo + the [Transilience AI](https://www.transilience.ai) team — so every share is a backlink.
 
 ---
 
@@ -12,10 +38,10 @@ This is a set of Claude Code skills, not a SaaS. It runs on your machine, uses y
 
 Five skills, each does one thing well:
 
+- **`linkedin-post-grader`** — `/grade-post <url-or-text>` returns a 0–10 score against the Jennifer filter + a rewrite that would score 7+. Works on your posts, competitor posts, or any viral thread. Screenshot-shareable by design. **Lowest-friction entry-point — start here.**
 - **`storyteller`** — surfaces post-worthy moments from your last 7 days of GitHub merges + Slack threads, scores them against your audience filter, lets you pick, drafts all 4 formats in parallel, generates an image, pushes drafts to Postiz.
 - **`linkedin-ads`** — stages a full LinkedIn Campaign Manager setup (3 hook variants + audience + offer + image + UTM'd URL) as one markdown file per ad. Manual copy-paste — no LinkedIn API.
-- **`linkedin-post-grader`** — `/grade-post <url-or-text>` returns a 0–10 score against the Jennifer filter + a rewrite that would score 7+. Works on your posts, competitor posts, or any viral thread. Screenshot-shareable by design.
-- **`kk-voice`** — the voice + audience filter. This is where the magic isn't: a 7-item pre-publish checklist against a real audience persona (mine is "Jennifer Chen, Deputy CISO at a US mid-market enterprise"). **Fork this file first.** This is what stops the output from sounding like generic LLM slop.
+- **`kk-voice`** — the voice + audience filter. This is where the magic isn't: a 7-item pre-publish checklist against a real audience persona (mine is "Jennifer Chen, Deputy CISO at a US mid-market enterprise"). **Fork this file to change the audience.** This is what stops the output from sounding like generic LLM slop.
 - **`kk-short-form`** — Reels/Shorts structural rules (4-part hook/setup/payoff/close, 60/30/10 audience ratio, 10-item pre-publish checklist for vertical video).
 
 ---
@@ -114,9 +140,9 @@ Also export `POSTIZ_API_KEY` and `GEMINI_API_KEY` in your shell (or drop `Gemini
 In any Claude Code session (CLI, VS Code, or web):
 
 ```
+/grade-post <url>       — grade any LinkedIn post (yours / a competitor's / a viral thread); screenshot-shareable. Works immediately after install.
 /storyteller            — surface this week's ranked post ideas, draft picks, push to Postiz
 /linkedin-ad <topic>    — stage a paid LinkedIn ad for Campaign Manager
-/grade-post <url>       — grade any LinkedIn post (yours / a competitor's / a viral thread); screenshot-shareable
 ```
 
 Flags:
