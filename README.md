@@ -1,5 +1,7 @@
 # StoryTeller
 
+**From the team at [Transilience AI](https://www.transilience.ai).** Open-source (MIT), local-first, and built for operators who'd rather ship than schedule meetings about shipping.
+
 Turn the work you're already shipping — GitHub PRs, Slack threads with traction, paid-ad ideas — into ranked, voice-correct social-media drafts across LinkedIn, X, Instagram, and Reels. Local-first. Never auto-publishes. You stay in control.
 
 This is a set of Claude Code skills, not a SaaS. It runs on your machine, uses your API keys, and writes drafts you review before anything goes live.
@@ -185,8 +187,8 @@ Honest about state: this is solo-built infrastructure for one operator's workflo
 
 ## Try it and tell me what breaks
 
-Repo: https://github.com/kkmookhey/StoryTeller (also mirrored at https://github.com/transilienceai/StoryTeller)
+Repo: https://github.com/transilienceai/StoryTeller (also at https://github.com/kkmookhey/StoryTeller)
 
-Honest feedback only. I'd rather rip out a feature than carry one that doesn't earn its keep.
+Honest feedback only. We'd rather rip out a feature than carry one that doesn't earn its keep.
 
-— KK
+— The team at [Transilience AI](https://www.transilience.ai)
