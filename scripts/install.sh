@@ -42,7 +42,7 @@ fi
 
 cat <<'EOF'
 
-StoryTeller + linkedin-ads installed.
+Fitzroy installed — 5 skills wired into ~/.claude/skills/.
 
 NEXT STEPS:
   1. Edit ~/.storyteller/config.yaml — add at least one repo under sources.github.repos

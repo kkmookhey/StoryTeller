@@ -1,4 +1,4 @@
-# StoryTeller — Slice D Design (Spec)
+# Fitzroy — Slice D Design (Spec)
 
 **Date:** 2026-05-24
 **Owner:** KK Mookhey
@@ -24,7 +24,7 @@ Build a local automation that turns recent product/company activity into ranked,
 
 ## 2. Architecture
 
-StoryTeller is a **Claude Code skill** (`storyteller`) installed at `~/.claude/skills/storyteller/`. It is not a web app. There is no frontend, no backend server, no custom auth.
+Fitzroy is a **Claude Code skill** (`storyteller`) installed at `~/.claude/skills/storyteller/`. It is not a web app. There is no frontend, no backend server, no custom auth.
 
 The skill is invoked two ways:
 
@@ -283,7 +283,7 @@ name: storyteller
 description: Use when KK wants to surface recent newsworthy product or company activity for social media posting. Triggers on /storyteller, "find me post ideas", "what's worth posting this week", "anything good from this week's PRs", scheduled Cowork runs, or any request to identify content-worthy moments from GitHub, Slack threads, or Confluence/Jira updates.
 ---
 
-# StoryTeller — Signals → Ranked Drafts → Postiz
+# Fitzroy — Signals → Ranked Drafts → Postiz
 
 **REQUIRED VOICE SKILL:** kk-voice — load before any scoring or drafting step.
 **REQUIRED FORMAT SKILL:** kk-short-form — load before drafting reels/shorts.

@@ -1,4 +1,4 @@
-# StoryTeller Slice E Implementation Plan
+# Fitzroy Slice E Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -217,7 +217,7 @@ Write `skill/storyteller/references/source-slack.md`:
 ```markdown
 # Source: Slack
 
-Normalize raw Slack messages (from `mcp__claude_ai_Slack__slack_search_*` tools) into the StoryTeller Signal shape.
+Normalize raw Slack messages (from `mcp__claude_ai_Slack__slack_search_*` tools) into the Fitzroy Signal shape.
 
 ## How to call
 

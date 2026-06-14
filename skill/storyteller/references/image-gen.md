@@ -3,7 +3,7 @@
 Generate ONE shared image per picked signal, reused for LinkedIn long-post and X thread.
 Instagram (held) gets the same image at shoot time; Reels uses the image as the opening static frame.
 
-**Prereq:** `GEMINI_API_KEY` set in env OR `Gemini Key.txt` present at the StoryTeller repo root. The helper handles both (override with `GEMINI_KEY_FILE` env var if your key file lives elsewhere).
+**Prereq:** `GEMINI_API_KEY` set in env OR `Gemini Key.txt` present at the Fitzroy repo root. The helper handles both (override with `GEMINI_KEY_FILE` env var if your key file lives elsewhere).
 
 **Brand style:** the Quiet Paper block is baked into `scripts/gen_image.sh`. Don't duplicate it in callers — edit the script if KK changes the aesthetic.
 

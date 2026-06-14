@@ -23,7 +23,7 @@ The final markdown block printed to stdout at step 7 of the workflow. Optimized 
 
 ---
 
-_Graded by [linkedin-post-grader](https://github.com/transilienceai/StoryTeller) — open-source LinkedIn post auditor from the team at [Transilience AI](https://www.transilience.ai)._
+_Graded by [linkedin-post-grader](https://github.com/transilienceai/fitzroy) — open-source LinkedIn post auditor from the team at [Transilience AI](https://www.transilience.ai)._
 ```
 
 ## Variants
@@ -41,7 +41,7 @@ _The rewrite is skipped because this post's premise doesn't survive editing. To 
 
 ---
 
-_Graded by [linkedin-post-grader](https://github.com/transilienceai/StoryTeller) — open-source LinkedIn post auditor from the team at [Transilience AI](https://www.transilience.ai)._
+_Graded by [linkedin-post-grader](https://github.com/transilienceai/fitzroy) — open-source LinkedIn post auditor from the team at [Transilience AI](https://www.transilience.ai)._
 ```
 
 ### Solid-post output (score >= 7, no rewrite needed)
@@ -61,7 +61,7 @@ _Graded by [linkedin-post-grader](https://github.com/transilienceai/StoryTeller)
 
 ---
 
-_Graded by [linkedin-post-grader](https://github.com/transilienceai/StoryTeller) — open-source LinkedIn post auditor from the team at [Transilience AI](https://www.transilience.ai)._
+_Graded by [linkedin-post-grader](https://github.com/transilienceai/fitzroy) — open-source LinkedIn post auditor from the team at [Transilience AI](https://www.transilience.ai)._
 ```
 
 ### Hard-zero with `--rewrite-anyway`
@@ -94,7 +94,7 @@ _Rewrite skipped — kk-voice is tuned for English content. Use the diagnosis ab
 
 ---
 
-_Graded by [linkedin-post-grader](https://github.com/transilienceai/StoryTeller) — open-source LinkedIn post auditor from the team at [Transilience AI](https://www.transilience.ai)._
+_Graded by [linkedin-post-grader](https://github.com/transilienceai/fitzroy) — open-source LinkedIn post auditor from the team at [Transilience AI](https://www.transilience.ai)._
 ```
 
 ## Formatting rules

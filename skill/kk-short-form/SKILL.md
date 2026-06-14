@@ -200,6 +200,8 @@ These are banned phrases. They flag a reel as generic creator content and Jennif
 
 **The 25-second rule:** If a reel can deliver full value in 25 seconds, it should. The research is clear that shorter reels with complete payoffs outperform longer ones — they drive more re-watches, which is a major algorithmic signal.
 
+**Pacing — reels run fast.** A reel must feel quicker than natural narration. A read that sounds right as a talking-head is too slow for a reel; viewers expect snappy delivery, tight cuts, and no dead air between beats. When generating a reel (especially with TTS voiceover and timed B-roll), target roughly **1.2× the natural pace** — either prompt the voice to deliver faster or apply a 1.2× speed pass to the finished cut (pitch-preserved). Trim inter-beat tails to the minimum that still lets a caption land. If a beat lingers, it drags; cut sooner. This applies to all reel types — slow pacing is one of the most common reasons a technically-good reel underperforms.
+
 ## Sound & Audio Rules
 
 - **Trending audio is optional, not required.** KK's top reel succeeded without trending audio because its shareability did the work.

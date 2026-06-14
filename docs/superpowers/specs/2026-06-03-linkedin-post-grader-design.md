@@ -6,7 +6,7 @@
 
 ## Why this exists
 
-Discussed 2026-06-03. The strongest viral entry-point for the StoryTeller toolkit isn't a new feature inside the existing skills — it's a **standalone grader command** that works on any LinkedIn post (yours, a competitor's, a viral thread) and returns a screenshot-worthy verdict + concrete rewrite. Every use is a sharable artifact. Lowest setup friction of any feature in the toolkit.
+Discussed 2026-06-03. The strongest viral entry-point for the Fitzroy toolkit isn't a new feature inside the existing skills — it's a **standalone grader command** that works on any LinkedIn post (yours, a competitor's, a viral thread) and returns a screenshot-worthy verdict + concrete rewrite. Every use is a sharable artifact. Lowest setup friction of any feature in the toolkit.
 
 Validated 2026-06-03: WebFetch successfully read a real LinkedIn `ugcPost` URL (Todyl CMMC post) — full body extracted from OG metadata, author name + reaction count surfaced, no login wall. v1 ships with WebFetch only; Apify fallback deferred to v2 if traffic justifies it.
 
@@ -109,7 +109,7 @@ The output is rendered as a single markdown block, optimized to be screenshot-pa
 
 ---
 
-_Graded by [linkedin-post-grader](https://github.com/transilienceai/StoryTeller) — open-source LinkedIn post auditor from the team at [Transilience AI](https://www.transilience.ai)._
+_Graded by [linkedin-post-grader](https://github.com/transilienceai/fitzroy) — open-source LinkedIn post auditor from the team at [Transilience AI](https://www.transilience.ai)._
 ```
 
 The footer attribution is the viral hook — every screenshot carries the project URL + the Transilience team brand.
@@ -117,7 +117,7 @@ The footer attribution is the viral hook — every screenshot carries the projec
 Output formatting rules:
 - The "verdict" header phrase is the part people screenshot and quote. Examples: "Vendor pitch with a deadline glued to it" / "Founder journey post; no operator voice." Make it punchy, not generic.
 - The rewrite block uses a `>` quote prefix so it visually stands apart in any markdown renderer.
-- The footer link uses the `transilienceai/StoryTeller` URL as the canonical repo (matches the README convention as of 2026-06-03).
+- The footer link uses the `transilienceai/fitzroy` URL as the canonical repo (matches the README convention as of 2026-06-03).
 
 ## Failure modes
 
@@ -128,7 +128,7 @@ Output formatting rules:
 | URL is not LinkedIn at all | Other domain | Reject: "/grade-post is for LinkedIn posts. If you want to grade arbitrary text, paste it directly." |
 | Hard-zero scoring rule fires | Pure announcement, India/ME-only regional, "excited to announce" with no substance, etc. | Score = 0. Name the hard-zero rule in the lead failure line. Skip the rewrite section (a hard-zero post often shouldn't exist — KK can override with `--rewrite-anyway`). |
 | Post body contains non-Latin script (Devanagari, CJK, Arabic) > 50% | Non-English content | Score with caveats noted. Skip the rewrite. Output footer: "Rewrite skipped — kk-voice is tuned for English content. Rewrite manually using the diagnosis above." |
-| kk-voice skill not installed | User cloned the grader without the full StoryTeller toolkit | Output error: "linkedin-post-grader requires the kk-voice skill. Install the full toolkit: https://github.com/transilienceai/StoryTeller" |
+| kk-voice skill not installed | User cloned the grader without the full Fitzroy toolkit | Output error: "linkedin-post-grader requires the kk-voice skill. Install the full toolkit: https://github.com/transilienceai/fitzroy" |
 | `--save` flag set but `~/.linkedinads/` doesn't exist | Standalone grader install without linkedin-ads | Create the dir lazily (skill owns its own bootstrap). |
 
 All errors render in a tone consistent with the share-worthy moment — never internal-exception-style. Bad-error example: `Error: WebFetch returned 0 bytes`. Good-error example: `Couldn't read this post — LinkedIn returned a login wall. Paste the body directly?`

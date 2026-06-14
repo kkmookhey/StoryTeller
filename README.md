@@ -1,4 +1,4 @@
-# StoryTeller
+# Fitzroy
 
 **From the team at [Transilience AI](https://www.transilience.ai).** Open-source (MIT), local-first, and built for operators who'd rather ship than schedule meetings about shipping.
 
@@ -111,8 +111,8 @@ Requirements:
 - Google AI Studio API key (Gemini Nano Banana Pro for image-gen — ~$0.05/image)
 
 ```bash
-git clone https://github.com/kkmookhey/StoryTeller
-cd StoryTeller
+git clone https://github.com/kkmookhey/fitzroy
+cd fitzroy
 bash scripts/install.sh
 ```
 
@@ -220,7 +220,7 @@ Honest about state: this is solo-built infrastructure for one operator's workflo
 
 ## Try it and tell me what breaks
 
-Repo: https://github.com/transilienceai/StoryTeller (also at https://github.com/kkmookhey/StoryTeller)
+Repo: https://github.com/transilienceai/fitzroy (also at https://github.com/kkmookhey/fitzroy)
 
 Honest feedback only. We'd rather rip out a feature than carry one that doesn't earn its keep.
 

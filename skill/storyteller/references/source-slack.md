@@ -1,6 +1,6 @@
 # Source: Slack
 
-Normalize raw Slack messages (from `mcp__claude_ai_Slack__slack_read_channel`) into the StoryTeller Signal shape.
+Normalize raw Slack messages (from `mcp__claude_ai_Slack__slack_read_channel`) into the Fitzroy Signal shape.
 
 **REQUIRED BACKGROUND:** Read `docs/superpowers/notes/slack-mcp-findings.md` for the exact MCP behavior, text-format quirks, and KK's reachable channels.
 

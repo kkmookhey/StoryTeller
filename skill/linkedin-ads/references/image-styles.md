@@ -1,6 +1,6 @@
 # Reference: Ad image styles (override Quiet-Paper)
 
-`gen_image.sh` ships with the Quiet-Paper aesthetic baked in for StoryTeller organic posts. For paid ads we want stopping power — different visual language entirely.
+`gen_image.sh` ships with the Quiet-Paper aesthetic baked in for Fitzroy organic posts. For paid ads we want stopping power — different visual language entirely.
 
 The skill overrides Quiet-Paper by exporting `IMAGE_STYLE=<block>` before invoking `gen_image.sh`. Three pre-tuned styles below.
 
@@ -57,7 +57,7 @@ export IMAGE_STYLE="<resolved style block>"
 bash ~/.claude/skills/storyteller/scripts/gen_image.sh "<subject>" "<output>"
 ```
 
-`gen_image.sh` reads `IMAGE_STYLE` and uses it in place of the Quiet-Paper default. The variable is local to the subprocess — does not leak into StoryTeller's organic-post image-gen.
+`gen_image.sh` reads `IMAGE_STYLE` and uses it in place of the Quiet-Paper default. The variable is local to the subprocess — does not leak into Fitzroy's organic-post image-gen.
 
 ## Regen with a different style
 

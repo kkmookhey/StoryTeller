@@ -1,6 +1,6 @@
 # Source: GitHub
 
-Normalize raw GitHub PR data (from `gh` CLI) into the StoryTeller Signal shape.
+Normalize raw GitHub PR data (from `gh` CLI) into the Fitzroy Signal shape.
 
 ## How to call
 

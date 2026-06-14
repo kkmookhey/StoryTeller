@@ -1,4 +1,4 @@
-# StoryTeller Slice D Implementation Plan
+# Fitzroy Slice D Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -25,7 +25,7 @@
 
 The spec flagged this as the #1 risk. We need three things:
 1. Whether `postiz posts:create` supports an explicit `--draft` flag, a `--status draft` enum, or whether "draft" requires scheduling far into the future.
-2. The mapping from social platform (linkedin/x/instagram/youtube) to Postiz integration IDs — KK may have multiple accounts on the same platform (personal LinkedIn vs Network Intelligence page vs Transilience page) and we need to pick which one StoryTeller posts to.
+2. The mapping from social platform (linkedin/x/instagram/youtube) to Postiz integration IDs — KK may have multiple accounts on the same platform (personal LinkedIn vs Network Intelligence page vs Transilience page) and we need to pick which one Fitzroy posts to.
 3. Whether multiple integrations can be targeted in one `posts:create` call or require separate calls per integration (the QUICK_START example uses `-i "twitter-123,linkedin-456,facebook-789"` so multi-integration in one call appears supported).
 
 **Auth prerequisite:** Before this task, KK must have:
@@ -57,10 +57,10 @@ Capture which flags exist for "draft" status. Look for: `--draft`, `--status`, `
 Try the most-natural draft mechanism first. Examples:
 ```bash
 # If a --draft flag exists:
-postiz posts:create -c "StoryTeller CLI test — please delete" -i <one-integration-id> --draft
+postiz posts:create -c "Fitzroy CLI test — please delete" -i <one-integration-id> --draft
 
 # OR scheduled-far-future workaround:
-postiz posts:create -c "StoryTeller CLI test — please delete" -i <one-integration-id> -s "2099-01-01T00:00:00Z"
+postiz posts:create -c "Fitzroy CLI test — please delete" -i <one-integration-id> -s "2099-01-01T00:00:00Z"
 ```
 Expected: post appears in Postiz UI under Drafts (or scheduled-far-future queue), is NOT published.
 
@@ -224,7 +224,7 @@ name: storyteller
 description: Use when KK wants to surface recent newsworthy product or company activity for social media posting. Triggers on /storyteller, "find me post ideas", "what's worth posting this week", "anything good from this week's PRs", scheduled Cowork runs, or any request to identify content-worthy moments from GitHub, Slack threads, or Confluence/Jira updates.
 ---
 
-# StoryTeller — Signals → Ranked Drafts → Postiz
+# Fitzroy — Signals → Ranked Drafts → Postiz
 
 **SKELETON — workflow content added in Task 12.**
 
@@ -238,7 +238,7 @@ This skeleton exists so the install script has something to symlink. Workflow co
 
 Write `skill/storyteller/sample-config.yaml`:
 ```yaml
-# StoryTeller configuration.
+# Fitzroy configuration.
 # Copy to ~/.storyteller/config.yaml and edit. The skill copies this automatically on first run.
 
 sources:
@@ -332,7 +332,7 @@ fi
 touch "${USER_DATA}/state.jsonl"
 
 echo
-echo "StoryTeller installed."
+echo "Fitzroy installed."
 echo "Edit ${USER_DATA}/config.yaml then run /storyteller in Claude Code."
 ```
 
@@ -366,9 +366,9 @@ chmod +x scripts/install.sh scripts/uninstall.sh
 ```
 Expected output:
 ```
-Linked $HOME/.claude/skills/storyteller -> $HOME/Projects/StoryTeller/skill/storyteller
+Linked $HOME/.claude/skills/storyteller -> $HOME/Projects/fitzroy/skill/storyteller
 Created $HOME/.storyteller/config.yaml from sample. ...
-StoryTeller installed.
+Fitzroy installed.
 ```
 
 - [ ] **Step 7: Verify the skill is discoverable**
@@ -443,7 +443,7 @@ Write `skill/storyteller/references/source-github.md`:
 ````markdown
 # Source: GitHub
 
-Normalize raw GitHub PR data from the GitHub MCP into the StoryTeller Signal shape.
+Normalize raw GitHub PR data from the GitHub MCP into the Fitzroy Signal shape.
 
 ## How to call
 
@@ -1380,7 +1380,7 @@ name: storyteller
 description: Use when KK wants to surface recent newsworthy product or company activity for social media posting. Triggers on /storyteller, "find me post ideas", "what's worth posting this week", "anything good from this week's PRs", scheduled Cowork runs, or any request to identify content-worthy moments from GitHub, Slack threads, or Confluence/Jira updates.
 ---
 
-# StoryTeller — Signals → Ranked Drafts → Postiz
+# Fitzroy — Signals → Ranked Drafts → Postiz
 
 **REQUIRED VOICE SKILL:** kk-voice — load before any scoring or drafting step.
 **REQUIRED FORMAT SKILL:** kk-short-form — load before drafting reels/shorts.
@@ -1666,7 +1666,7 @@ Write `tests/scenarios/red-baseline.md`:
 # RED — Baseline scenarios (skill NOT installed)
 
 For each scenario, dispatch a fresh subagent (or open a new Claude Code session)
-with NO StoryTeller skill loaded. Record verbatim what the agent does. We want
+with NO Fitzroy skill loaded. Record verbatim what the agent does. We want
 to capture the rationalizations and gaps that the skill must close.
 
 ## Scenario 1: Direct request, no context
@@ -1708,7 +1708,7 @@ Expected baseline failures:
 
 For each scenario, capture in `tests/scenarios/red-baseline-results.md`:
 - The exact agent response (verbatim)
-- A bullet list of how it violates the StoryTeller design
+- A bullet list of how it violates the Fitzroy design
 - Any rationalizations the agent used (e.g., "I'll just give you a generic template")
 ````
 

@@ -1,6 +1,6 @@
 # Drafting — Shared Conventions
 
-This file is loaded by ALL StoryTeller drafter prompts (`drafting-linkedin.md`, `drafting-x-thread.md`, `drafting-instagram.md`, `drafting-reels.md`). It defines cross-format conventions so each drafter prompt can stay focused on format-specific structure.
+This file is loaded by ALL Fitzroy drafter prompts (`drafting-linkedin.md`, `drafting-x-thread.md`, `drafting-instagram.md`, `drafting-reels.md`). It defines cross-format conventions so each drafter prompt can stay focused on format-specific structure.
 
 ## Voice authority
 

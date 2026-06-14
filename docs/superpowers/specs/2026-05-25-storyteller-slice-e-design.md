@@ -1,4 +1,4 @@
-# StoryTeller — Slice E Design (Spec)
+# Fitzroy — Slice E Design (Spec)
 
 **Date:** 2026-05-25
 **Owner:** KK Mookhey

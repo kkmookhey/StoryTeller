@@ -3,7 +3,7 @@ name: storyteller
 description: Use when KK wants to surface recent newsworthy product or company activity for social media posting. Triggers on /storyteller, "find me post ideas", "what's worth posting this week", "anything good from this week's PRs", scheduled Cowork runs, or any request to identify content-worthy moments from GitHub, Slack threads, or Confluence/Jira updates.
 ---
 
-# StoryTeller — Signals to Ranked Drafts to Postiz
+# Fitzroy — Signals to Ranked Drafts to Postiz
 
 Orchestrate the pipeline. Detail lives in `references/`.
 
@@ -44,7 +44,7 @@ Orchestrate the pipeline. Detail lives in `references/`.
 ## Prerequisites
 - `gh` authenticated (`gh auth status` OK).
 - `postiz` installed; `POSTIZ_API_KEY` set.
-- `GEMINI_API_KEY` set in env OR `Gemini Key.txt` present at the StoryTeller repo root (the `gen_image.sh` helper handles both; override with `GEMINI_KEY_FILE` env var). Skip if running `--no-images`.
+- `GEMINI_API_KEY` set in env OR `Gemini Key.txt` present at the Fitzroy repo root (the `gen_image.sh` helper handles both; override with `GEMINI_KEY_FILE` env var). Skip if running `--no-images`.
 - Slack MCP (`mcp__claude_ai_Slack__*`) available.
 - `~/.storyteller/config.yaml` exists; if missing, copy `sample-config.yaml` and pause for repos.
 

@@ -92,7 +92,7 @@ The `@me` shorthand resolves to the authenticated user. Use this when `config.so
 
 | Repo | Visibility | Updated |
 |---|---|---|
-| StoryTeller | private | 2026-05-25 |
+| Fitzroy | private | 2026-05-25 |
 | ciso-copilot | public | 2026-05-25 |
 | concourse | private | 2026-05-17 |
 | basecamp-ai-sec | public | 2026-05-21 |

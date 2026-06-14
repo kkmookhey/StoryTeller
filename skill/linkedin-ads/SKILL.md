@@ -55,7 +55,7 @@ Output is a single markdown file per ad in `~/.linkedinads/staging/`. KK copy-pa
 ## Prerequisites
 
 - `~/.linkedinads/config.yaml` exists; if missing, copy `sample-config.yaml` and pause for KK to fill `audiences[]` + `offers[]`.
-- `GEMINI_API_KEY` set in env OR `Gemini Key.txt` present at the StoryTeller repo root (`gen_image.sh` handles both). Skip the check if running `--no-image`.
+- `GEMINI_API_KEY` set in env OR `Gemini Key.txt` present at the Fitzroy repo root (`gen_image.sh` handles both). Skip the check if running `--no-image`.
 - `storyteller` skill installed at `~/.claude/skills/storyteller/` (for `scripts/gen_image.sh`).
 
 **REQUIRED VOICE SKILL:** `kk-voice` — load before drafting variants (step 6). The Jennifer Chen audience profile is the bar every variant must clear.
@@ -70,7 +70,7 @@ Output is a single markdown file per ad in `~/.linkedinads/staging/`. KK copy-pa
 
 ## Phase 2 (deferred — stub references exist but not wired)
 
-- **StoryTeller integration** — `references/storyteller-integration.md` stub. Will plug into StoryTeller's step 8.5 once v1 has dogfooded a few real ads.
+- **Fitzroy integration** — `references/storyteller-integration.md` stub. Will plug into Fitzroy's step 8.5 once v1 has dogfooded a few real ads.
 - **Additional formats** — Document, Video, Carousel.
 - **Additional objectives** — Brand Awareness, Engagement.
 - **Network Intelligence + KK-personal brands** — separate audience/offer sets in config.

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# gen_image.sh — Generate one image via Gemini API for a StoryTeller draft.
+# gen_image.sh — Generate one image via Gemini API for a Fitzroy draft.
 #
 # Usage:
 #   gen_image.sh "<image-prompt>" "<absolute-output-path>"
 #
 # Behavior:
 #   - Reads GEMINI_API_KEY from env, falling back to "Gemini Key.txt" in
-#     $HOME/Projects/StoryTeller/ (mirrors the Postiz Key.txt pattern).
+#     $HOME/Projects/fitzroy/ (mirrors the Postiz Key.txt pattern).
 #   - Prepends the Quiet Paper style block to every prompt (single source of truth
 #     for KK's brand aesthetic — edit this block, not the caller).
 #   - Defaults to gemini-3-pro-image-preview (Nano Banana Pro). Override via
@@ -22,7 +22,7 @@ set -euo pipefail
 PROMPT="${1:?usage: gen_image.sh <prompt> <output.png>}"
 OUTPUT="${2:?usage: gen_image.sh <prompt> <output.png>}"
 MODEL="${STORYTELLER_IMAGE_MODEL:-gemini-3-pro-image-preview}"
-KEY_FILE="$HOME/Projects/StoryTeller/Gemini Key.txt"
+KEY_FILE="$HOME/Projects/fitzroy/Gemini Key.txt"
 
 if [[ -z "${GEMINI_API_KEY:-}" ]]; then
   if [[ -f "$KEY_FILE" ]]; then
